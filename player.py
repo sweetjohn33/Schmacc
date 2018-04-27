@@ -9,8 +9,8 @@ class Player:
 
     def __init__(self, name="player"):
         """
-        :rtype: object
-        :param name:
+
+        :param name: the name of the player
         """
         self._name = name
         self._Neutered_rabbits = 0
@@ -20,12 +20,6 @@ class Player:
         self._creatures = []
         self._food_count = 0
         self._lands = []
-        """
-        DICT: {K:V, K:V}
-        SET: {M, M, M}
-        LIST: [M, M, M]
-        TUPLE: (M, M, M)
-        """
 
     def name(self) -> str:
         return self._name
