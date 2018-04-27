@@ -19,7 +19,7 @@ class Schmacc:
     def __init__(self, number):
         """
 
-        :type number: string
+        :param number: The number of players
         """
 
         self._number_of_players = int(number)
@@ -235,12 +235,21 @@ class Schmacc:
         # Prints the contents of every player's land and graveyard, next to their name.
 
         for i in self._List_of_players:
-            print("=======\n" + i.name() + "'s shit")
+            print("\n=======\n\n" + i.name() + "'s shit")
             for a in i.lands():
                 a.print_contents_neatly()
-            print("\n" + i.name() + "'s graveyard" + i.graveyard())
+            gravyyard = []
+            for g in i.graveyard():
+                gravyyard.append(g.name())
+            print("\n" + i.name() + "'s graveyard: " + ', '.join(gravyyard))
 
     def put_monster_on_land(self, player, creature):
+        """
+
+        :param player: The player who is placing the monster
+        :param creature: The monster being placed
+        :return:
+        """
 
         # If a player receive/buys a monster, he will need to place it. This function displays the player's lands and
         # asks the player to choose where to place his monster. you can only have one monster on each land.
@@ -261,16 +270,16 @@ class Schmacc:
                 print(str(i + 1) + ")" + str(player.lands()[i]))
             placement = input("Type a number")
             tried_before += 1
-            while len(player.lands()[int(placement) - 1].monster_slot()) != 0:
-                print("\nThat section of land already has a creature!\n")
-                for i in range(len(player.lands())):
-                    print(str(i + 1) + ")" + str(player.lands()[i]))
-                placement = input("\nTry again")
         placement = int(placement) - 1
         player.lands()[placement].add_monster(creature)
         print("\nYou have placed your", creature.name(), "in the", player.lands()[placement])
 
     def put_building_on_land(self, player, building):
+        """
+
+        :param player: The player who is placing the building
+        :param building: the building placed
+        """
 
         # If a player receive/buys a building, he will need to place it. This function displays the player's lands and
         # asks the player to choose where to place his building. You can have 2 buildings on one land.
@@ -296,8 +305,14 @@ class Schmacc:
         print("You have placed your", building.name(), "in the", player.lands()[placement])
 
     def put_building_on_land_to_start(self, player, building):
+        """
 
-        # Same as the function above except duringg game setup you can only place one building on each of your lands.
+        :param player: The player who is placing the building
+        :param building: the building placed
+        :return:
+        """
+
+        # Same as the function above except during game setup you can only place one building on each of your lands.
 
         placement = ""
         tried_before = 0
@@ -320,6 +335,11 @@ class Schmacc:
         print("\nYou have placed your", building.name(), "in the", player.lands()[placement], "\n")
 
     def check_slots(self, player, card):
+        """
+
+        :param player: the player checked
+        :param card: the type of card checked
+        """
 
         # If a player attempts to buy a monster or building but all of his lands are full, this function will return
         # False so that the player will not be allowed to buy that building (because there will be nowhere to place it.
@@ -344,6 +364,13 @@ class Schmacc:
                 return True
 
     def buy_something_random(self, card, cost, player, pist):
+        """
+
+        :param card: type of card bought
+        :param cost: cost of card
+        :param player: player buying
+        :param pist: list bought from
+        """
 
         # This function takes a card type, a cost, a player, and a list. It uses the card type and list to
         # determine what the player will be receiving (ie elite creature, or building, or spell, etc.). The player
@@ -376,6 +403,13 @@ class Schmacc:
             print("Sorry folks! Were all out of those!")
 
     def buy_somthing_specific(self, card, cost, player, pist):
+        """
+
+                :param card: type of card bought
+                :param cost: cost of card
+                :param player: player buying
+                :param pist: list bought from
+                """
 
         # Does the same thing as the function above except the player gets to choose what card he buys. So this function
         # displays the list of possible cards to choose from and the player picks one to obtain. In the case of the
@@ -439,6 +473,11 @@ class Schmacc:
             print("Sorry folks! Were all out of those!")
 
     def tribute_monster(self, turn_player, land):
+        """
+
+        :param turn_player: player tributing
+        :param land: land tributing from
+        """
 
         # This function takes a player and a land under that player's control. The player picks a monster from that land
         # Or backs out. Once they pick the monster the player chooses what bonuses he hopes to receive from that monster
@@ -583,6 +622,11 @@ class Schmacc:
         del land.monster_slot()[0]
 
     def building_phase(self, turn_player, turn_counter):
+        """
+
+        :param turn_player: player taking turn
+        :return:
+        """
 
         # This function runs the player through their buildings phase. It starts off by giving the player their
         # neutered rabbits, food, and magic card for the turn. Then it presents the player with several options: to buy
