@@ -5,14 +5,15 @@ class Land:
     # one monster and two buildings at a time
 
     def __init__(self, name):
+        """
+
+        :param name: The name of the class
+        """
         self._contents = [[], []]
         self._name = name
 
     def __repr__(self):
         return self._name
-
-    def __str__(self):
-        return self.__repr__()
 
     def return_name(self):
         return self._name
@@ -39,8 +40,8 @@ class Land:
         buildings = []
         for building in self._contents[1]:
             buildings.append(building.name())
-        print(self._name() + " : " + "Monsters: " + ", ".join(monsters) +
-              " Buildings: " + ", ".join(buildings))
+        print(self._name + " : Monsters: " + ', '.join(monsters) +
+              "  |||  Buildings: " + ', '.join(buildings))
 
     def monster_slot(self):
         return self._contents[0]
