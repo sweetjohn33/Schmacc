@@ -7,6 +7,15 @@ class PermanentCard:
     # relevant to the game. We will keep track of their stats through "current" stats which will be modified as needed,
     # and "original" stats which will never change
     def __init__(self, name, health, defense, attack="", good_terrain="", bad_terrain=""):
+        """
+
+        :param name: name of card
+        :param health: original health of card
+        :param defense: original defense
+        :param attack: original attack
+        :param good_terrain: card's preferred terrain
+        :param bad_terrain: card's least preferred terrain
+        """
         self._name = name
         self._Original_health = health
         self._Current_health = health
@@ -45,9 +54,6 @@ class PermanentCard:
 
     def __repr__(self):
         return self._name
-
-    def __str__(self):
-        return self.__repr__()
 
     @staticmethod
     def combat(perm1, perm2):
@@ -105,6 +111,10 @@ class Spell:
     # subtypes of spell card may be added
 
     def __init__(self, name):
+        """
+
+        :param name: name of spell
+        """
         self._name = name
 
     def name(self) -> str:
