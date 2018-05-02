@@ -1,5 +1,3 @@
-from random import randint
-from Card_classes import PermanentCard
 from schamcc import Schmacc
 
 # welcome

@@ -1,11 +1,11 @@
-from player import Player
-from Card_classes import NormalCreature
-from Card_classes import EliteCreature
-from Card_classes import BasicCreature
-from Card_classes import Building
-from Card_classes import Spell
+from Objects.player import Player
+from Objects.Card_classes import NormalCreature
+from Objects.Card_classes import EliteCreature
+from Objects.Card_classes import BasicCreature
+from Objects.Card_classes import Building
+from Objects.Card_classes import Spell
 from random import randint
-from Land import Land
+from Objects.Land import Land
 from random import sample
 
 
