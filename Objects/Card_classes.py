@@ -1,3 +1,5 @@
+# A module to hold the different types of cards
+
 from random import randint
 
 

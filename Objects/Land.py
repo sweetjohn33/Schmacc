@@ -1,3 +1,6 @@
+# A module to hold the Land class
+
+
 class Land:
 
     # Here are our plots of land. They have a name and a list of lists, of which the first list contains their monsters

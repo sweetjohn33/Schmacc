@@ -14,8 +14,4 @@ if __name__ == "__main__":
         tried += 1
     game = Schmacc(number_of_players)
     game.start_game()
-
-
-
-
     game.game_sequence()

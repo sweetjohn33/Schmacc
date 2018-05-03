@@ -1,3 +1,5 @@
+# A module to hold the processes and phases of the game
+
 from Objects.player import Player
 from Objects.Card_classes import NormalCreature
 from Objects.Card_classes import EliteCreature
@@ -263,7 +265,7 @@ class Schmacc:
                     print("Invalid input (not an integer). Try again")
                 elif int(placement) - 1 not in range(len(player.lands())):
                     print("\nInvalid input (wrong number bitch) Try again\n")
-                elif len(player.lands()[int(placement) - 1].monster_slots()) > 0:
+                elif len(player.lands()[int(placement) - 1].monster_slot()) > 0:
                     print("\nThat section of land already has a creature!\n")
             print("Where would you like to place your", creature.name(), "?\n")
             for i in range(len(player.lands())):
