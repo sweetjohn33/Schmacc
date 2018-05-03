@@ -987,7 +987,8 @@ class Schmacc:
                 g = int(g)
 
         print("The building phase is over, now lets move to the main phase\n\n==========\n\n")
-    def main_phase(self, turn_player, turn_counter):
+
+    def main_phase(self, turn_player, phase_number):
         main_phase_quote = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
                                "Activate Building effect\n3) Activate Monster effect" \
                                "\n4) Check shit out\n5) See my spells\n6) Send me to the " \
@@ -998,20 +999,20 @@ class Schmacc:
         while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
             if tried_before > 0:
                 print("\nInvalid Input. Try Again!\n")
-            print(building_phase_quote)
+            print(main_phase_quote)
             g = input("Answer me with a number please:")
             tried_before += 1
         g = int(g)
         while g != 6:
-            if g = 1:
+            if g == 1:
                 # Show the player their spells and prompt them to activate one
                 pass
 
-            if g = 2:
+            if g == 2:
                 # Show the player their buildings and prompt them to activate a building effect
                 pass
 
-            if g = 3:
+            if g == 3:
                 # Show the player their monsters and prompt to activate a monster effect
                 pass
 
@@ -1022,7 +1023,7 @@ class Schmacc:
                 while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
                     if tried_before > 0:
                         print("\nInvalid Input. Try Again!\n")
-                    print(building_phase_quote)
+                    print(main_phase_quote)
                     g = input("Answer me with a number please:")
                     tried_before += 1
                 g = int(g)
@@ -1037,13 +1038,71 @@ class Schmacc:
                 while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
                     if tried_before > 0:
                         print("\nInvalid Input. Try Again!\n")
-                    print(building_phase_quote)
+                    print(main_phase_quote)
                     g = input("Answer me with a number please:")
                     tried_before += 1
                 g = int(g)
 
-        print("The main phase is over, now lets move to the battle phase\n\n==========\n\n")
+        if phase_number == 1:
+            print("The main phase is over, now lets move to the battle phase\n\n==========\n\n")
 
+        if phase_number == 2:
+            print("The second main phase is over, and with it ends your turn and your aagency over the board situation"
+                  "I bid thee adieu")
+
+    def battle_phase(self, turn_player):
+        battle_phase_quote = "\nWould you like to attack anything? Cause you probably should its a zero drawback play" \
+                             " and if you don't you're a goob" \
+                             "\n1) Attack Someone\n2) " \
+                             "see monster stats\n3) Check shit out\n4) See my spells\n5) Send me to the " \
+                             "second main phase my dude"
+        print(turn_player.name() + " has entered the main phase, what would you like to do?\n\n")
+        g = ""
+        tried_before = 0
+        while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
+            if tried_before > 0:
+                print("\nInvalid Input. Try Again!\n")
+            print(battle_phase_quote)
+            g = input("Answer me with a number please:")
+            tried_before += 1
+        g = int(g)
+        while g != 5:
+            if g == 1:
+                # Show the player their spells and prompt them to activate one
+                pass
+
+            if g == 2:
+                # Show the player their buildings and prompt them to activate a building effect
+                pass
+
+            if g == 3:
+                self.print_game_state()
+                g = ""
+                tried_before = 0
+                while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
+                    if tried_before > 0:
+                        print("\nInvalid Input. Try Again!\n")
+                    print(battle_phase_quote)
+                    g = input("Answer me with a number please:")
+                    tried_before += 1
+                g = int(g)
+
+            # If the player wants to see their spells they get their spells displayed to them. then they are returned to
+            # the phase menu
+
+            if g == 4:
+                turn_player.print_spells_neatly()
+                g = ""
+                tried_before = 0
+                while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
+                    if tried_before > 0:
+                        print("\nInvalid Input. Try Again!\n")
+                    print(battle_phase_quote)
+                    g = input("Answer me with a number please:")
+                    tried_before += 1
+                g = int(g)
+
+        print("The battle phase is over, now lets move to the second main phase\n\n==========\n\n")
 
     def game_sequence(self):
 
@@ -1053,4 +1112,7 @@ class Schmacc:
         turn_counter = 0
         turn_player = self._List_of_players[turn_counter % len(self._List_of_players)]
         self.building_phase(turn_player, turn_counter)
+        self.main_phase(turn_player, 1)
+        self.battle_phase(turn_player)
+        self.main_phase(turn_player, 2)
 
