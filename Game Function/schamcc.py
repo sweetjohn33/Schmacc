@@ -141,90 +141,23 @@ class Schmacc:
         self._List_of_players = []
         self._Spells_to_sell = []
 
-    def start_game(self):
+    def return_spells(self):
+        return self._List_of_Spells
 
-        # This function starts the game by first shuffling the spell deck, and then initializing the 12 lands
-        # we will play with. Then the game creates a number of players by taking their names as inputs. The game
-        # distributes the lands randomly and evenly to the players, and then distributes one random building and one
-        # random creature to each player for each land they control. The players then place their monsters and buildings
-        # on their land one by one. Then the game is setup!
+    def return_players(self):
+        return self._List_of_players
 
-        self.shuffle_deck()
-        print("\n=========\nHere is the order the spell cards should be in\n")
-        print(self._List_of_Spells)
-        print("\n=========\n")
-        forest1 = Land("Forest")
-        forest2 = Land("Forest")
-        meadow1 = Land("Meadow")
-        meadow2 = Land("Meadow")
-        mountain1 = Land("Mountain")
-        mountain2 = Land("Mountain")
-        snow1 = Land("Snow")
-        snow2 = Land("Snow")
-        marsh1 = Land("Marsh")
-        marsh2 = Land("Marsh")
-        desert1 = Land("Desert")
-        desert2 = Land("Desert")
-        unassigned_lands = [forest1, forest2, meadow1, meadow2, mountain1,
-                            mountain2, snow1, snow2, marsh1, marsh2, desert1, desert2]
+    def return_buildings(self):
+        return self._List_of_Buildings
 
-        # The players are prompted for their names and the game creates a player with each name given,
-        # adding it to the list of players
+    def return_basic_creatures(self):
+        return self._List_of_Basic_creatures
 
-        for i in range(self._number_of_players):
-            player_name = input("Please enter Player Name: ")
-            new_player = Player(player_name)
-            self._List_of_players.append(new_player)
-        self._List_of_players = sample(self._List_of_players, len(self._List_of_players))
+    def return_normal_creatures(self):
+        return self._List_of_Normal_creatures
 
-        # Every land in the list of lands is assigned randomly to a player and added to their list of lands
-
-        while len(unassigned_lands) != 0:
-            for player in self._List_of_players:
-                rand_index = randint(0, len(unassigned_lands) - 1)
-                player.add_land(unassigned_lands[rand_index])
-                del unassigned_lands[rand_index]
-
-        # Each player receives one random land and one random building for every land they own. These objects
-        # are stored in the players list of buildings and list of monsters
-
-        for player in self._List_of_players:
-            for i in range(len(player.lands())):
-
-                rand_index = randint(0, len(self._List_of_Basic_creatures)-1)
-                player.add_creature(self._List_of_Basic_creatures[rand_index])
-
-                del self._List_of_Basic_creatures[rand_index]
-
-                rand_index2 = randint(0, len(self._List_of_Buildings) - 1)
-                player.add_building(self._List_of_Buildings[rand_index2])
-
-                del self._List_of_Buildings[rand_index2]
-
-        # The player receives a summary of what he or she received randomly to start the game. Then the player begins
-        # choosing where to place his creatures one by one, and then his buildings, until he has no more left to place.
-        # Then the next player places his shit
-
-        for player in self._List_of_players:
-
-            print("\nPlayer Name:", player.name())
-            print("Creatures:", player.creatures())
-            print("Buildings:", player.buildings())
-            print("Lands:", player.lands())
-
-            print("\nLet's place " + player.name() + "'s creatures!")
-
-            for a in range(len(player.creatures())):
-                self.put_monster_on_land(player, player.creatures()[a])
-
-            print("\nLet's place " + player.name() + "'s buildings!")
-
-            for a in range(len(player.buildings())):
-                self.put_building_on_land_to_start(player, player.buildings()[a])
-
-        # At the end of this process the program ends with a celebratory note to tell you that you are done setting up
-        print("\nCongratulations! you have succeeded in setting up the game without crashing it!"
-              "\nNow lets see how you play\n")
+    def return_elite_creatures(self):
+        return self._List_of_Elite_creatures
 
     def shuffle_deck(self):
 
@@ -987,19 +920,27 @@ class Schmacc:
                 g = int(g)
 
         print("The building phase is over, now lets move to the main phase\n\n==========\n\n")
+        self.main_phase(turn_player, 1, turn_counter)
 
-    def main_phase(self, turn_player, phase_number):
-        main_phase_quote = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
+    def main_phase(self, turn_player, phase_number, turn_counter):
+        main_phase_quote_1 = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
                                "Activate Building effect\n3) Activate Monster effect" \
                                "\n4) Check shit out\n5) See my spells\n6) Send me to the " \
                                "battle phase my dude"
-        print(turn_player.name() + " has entered the main phase, what would you like to do?\n\n")
+        main_phase_quote_2 = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
+                             "Activate Building effect\n3) Activate Monster effect" \
+                             "\n4) Check shit out\n5) See my spells\n6) End my turn my dude"
+        print("\n\nTurn: " + str(turn_counter) + "\n" + turn_player.name() + " has entered the"
+              "main phase, what would you like to do?\n\n")
         g = ""
         tried_before = 0
         while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
             if tried_before > 0:
                 print("\nInvalid Input. Try Again!\n")
-            print(main_phase_quote)
+            if phase_number == 1:
+                print(main_phase_quote_1)
+            if phase_number == 2:
+                print(main_phase_quote_2)
             g = input("Answer me with a number please:")
             tried_before += 1
         g = int(g)
@@ -1023,7 +964,10 @@ class Schmacc:
                 while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
                     if tried_before > 0:
                         print("\nInvalid Input. Try Again!\n")
-                    print(main_phase_quote)
+                    if phase_number == 1:
+                        print(main_phase_quote_1)
+                    if phase_number == 2:
+                        print(main_phase_quote_2)
                     g = input("Answer me with a number please:")
                     tried_before += 1
                 g = int(g)
@@ -1038,25 +982,30 @@ class Schmacc:
                 while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
                     if tried_before > 0:
                         print("\nInvalid Input. Try Again!\n")
-                    print(main_phase_quote)
+                    if phase_number == 1:
+                        print(main_phase_quote_1)
+                    if phase_number == 2:
+                        print(main_phase_quote_2)
                     g = input("Answer me with a number please:")
                     tried_before += 1
                 g = int(g)
 
         if phase_number == 1:
             print("The main phase is over, now lets move to the battle phase\n\n==========\n\n")
+            self.battle_phase(turn_player, turn_counter)
 
         if phase_number == 2:
-            print("The second main phase is over, and with it ends your turn and your aagency over the board situation"
+            print("The second main phase is over, and with it ends your turn and your agency over the board situation"
                   "I bid thee adieu")
 
-    def battle_phase(self, turn_player):
+    def battle_phase(self, turn_player,turn_counter):
         battle_phase_quote = "\nWould you like to attack anything? Cause you probably should its a zero drawback play" \
                              " and if you don't you're a goob" \
                              "\n1) Attack Someone\n2) " \
                              "see monster stats\n3) Check shit out\n4) See my spells\n5) Send me to the " \
                              "second main phase my dude"
-        print(turn_player.name() + " has entered the main phase, what would you like to do?\n\n")
+        print("\n\nTurn: " + str(turn_counter) + "\n" + turn_player.name() + " has entered the main" \
+                                                                           " phase, what would you like to do?\n\n")
         g = ""
         tried_before = 0
         while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
@@ -1103,16 +1052,17 @@ class Schmacc:
                 g = int(g)
 
         print("The battle phase is over, now lets move to the second main phase\n\n==========\n\n")
+        self.main_phase(turn_player, 2, turn_counter)
 
-    def game_sequence(self):
-
-        # This will run the turns of the game in the correct order until a winner is declared. After one player's turn
-        # is over the next player in the list will take their turn
-
-        turn_counter = 0
-        turn_player = self._List_of_players[turn_counter % len(self._List_of_players)]
-        self.building_phase(turn_player, turn_counter)
-        self.main_phase(turn_player, 1)
-        self.battle_phase(turn_player)
-        self.main_phase(turn_player, 2)
+    # def game_sequence(self):
+    #
+    #     # This will run the turns of the game in the correct order until a winner is declared. After one player's turn
+    #     # is over the next player in the list will take their turn
+    #
+    #     turn_counter = 0
+    #     turn_player = self._List_of_players[turn_counter % len(self._List_of_players)]
+    #     self.building_phase(turn_player, turn_counter)
+    #     self.main_phase(turn_player, 1)
+    #     self.battle_phase(turn_player)
+    #     self.main_phase(turn_player, 2)
 
