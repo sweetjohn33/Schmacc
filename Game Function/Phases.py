@@ -1,6 +1,9 @@
 # A module to hold the phases of the game
 
-from Land import Land
+from Objects.Deck import Deck
+from Objects.Land import Land
+from Objects.player import Player
+from random import randint
 def start_game(game):
     # This function starts the game by first shuffling the spell deck, and then initializing the 12 lands
     # we will play with. Then the game creates a number of players by taking their names as inputs. The game
@@ -8,24 +11,13 @@ def start_game(game):
     # random creature to each player for each land they control. The players then place their monsters and buildings
     # on their land one by one. Then the game is setup!
 
-    game.shuffle_deck()
+    game.return_spells().shuffle_deck()
     print("\n=========\nHere is the order the spell cards should be in\n")
     print(game.return_spells())
     print("\n=========\n")
-    forest1 = Land("Forest")
-    forest2 = Land("Forest")
-    meadow1 = Land("Meadow")
-    meadow2 = Land("Meadow")
-    mountain1 = Land("Mountain")
-    mountain2 = Land("Mountain")
-    snow1 = Land("Snow")
-    snow2 = Land("Snow")
-    marsh1 = Land("Marsh")
-    marsh2 = Land("Marsh")
-    desert1 = Land("Desert")
-    desert2 = Land("Desert")
-    unassigned_lands = [forest1, forest2, meadow1, meadow2, mountain1,
-                        mountain2, snow1, snow2, marsh1, marsh2, desert1, desert2]
+    unassigned_lands = Deck([Land("Forest"), Land("Forest"), Land("Meadow"), Land("Meadow"), Land("Mountain"),
+                             Land("Mountain"), Land("Snow"), Land("Snow"), Land("Marsh"), Land("Marsh"), Land("Desert"),
+                             Land("Desert")], land)
 
     # The players are prompted for their names and the game creates a player with each name given,
     # adding it to the list of players
@@ -33,15 +25,15 @@ def start_game(game):
     for i in range(game._number_of_players):
         player_name = input("Please enter Player Name: ")
         new_player = Player(player_name)
-        game.return_players().append(new_player)
-    game.return_players() = sample(game.return_players(), len(game.return_players()))
+        game.return_players().put_card_on_top(new_player)
+    game.return_players().shuffle_deck()
 
     # Every land in the list of lands is assigned randomly to a player and added to their list of lands
 
-    while len(unassigned_lands) != 0:
+    while unassigned_lands.return_count() != 0:
         for player in game.return_players():
-            rand_index = randint(0, len(unassigned_lands) - 1)
-            player.add_land(unassigned_lands[rand_index])
+            rand_index = randint(0, unassigned_lands.return_count() - 1)
+            player.add_land(unassigned_lands.return_card_in_deck(rand_index))
             del unassigned_lands[rand_index]
 
     # Each player receives one random land and one random building for every land they own. These objects

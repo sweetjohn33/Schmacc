@@ -1,6 +1,6 @@
 # A module to hold the processes and phases of the game
 
-from Objects.player import Player
+from Objects.Deck import Deck
 from Objects.Card_classes import NormalCreature
 from Objects.Card_classes import EliteCreature
 from Objects.Card_classes import BasicCreature
@@ -25,7 +25,7 @@ class Schmacc:
         """
 
         self._number_of_players = int(number)
-        self._List_of_Elite_creatures = [EliteCreature("Baby Chicken of Death", 6, 9, 9, "Meadow", "Snow"),
+        self._Elite_creatures = Deck([EliteCreature("Baby Chicken of Death", 6, 9, 9, "Meadow", "Snow"),
                                          EliteCreature("Armadillo Turtle", 11, 11, 2, "Marsh", "Forest"),
                                          EliteCreature("Ding-aDinga-....Saurus", 6, 4, 14, "Mountain", "Snow"),
                                          EliteCreature("Wan Shi Tong", 10, 10, 4, "Desert", "Marsh"),
@@ -33,9 +33,9 @@ class Schmacc:
                                          EliteCreature("Le Flop Dog", 6, 8, 10, "Snow", "Desert"),
                                          EliteCreature("Da Pig", 10, 10, 10, "Meadow", "Snow"),
                                          EliteCreature("Wasabi Ice Cream Dragon", 5, 7, 12, "Snow", "Forest"),
-                                         EliteCreature("Mongoose Dragon", 8, 6, 10, "Desert", "Meadow")]
+                                         EliteCreature("Mongoose Dragon", 8, 6, 10, "Desert", "Meadow")], monster)
 
-        self._List_of_Normal_creatures = [NormalCreature("Tortuga_Luchadora", 5, 6, 5, "Marsh", "Snow"),
+        self._Normal_creatures = Deck([NormalCreature("Tortuga_Luchadora", 5, 6, 5, "Marsh", "Snow"),
                                           NormalCreature("Baby Phoenix", 8, 5, 3, "Desert", "Meadow"),
                                           NormalCreature("Polar Bear Fruit Salesman", 5, 5, 6, "Snow", "Mountain"),
                                           NormalCreature("Headsman", 3, 6, 7, "Meadow", "Desert"),
@@ -44,8 +44,8 @@ class Schmacc:
                                           NormalCreature("Trojan Donkey", 8, 4, 2, "Meadow", "Marsh"),
                                           NormalCreature("Fox Deer", 6, 2, 6, "Mountain", "Forest"),
                                           NormalCreature("Big Bad Blowing Butcher", 5, 2, 7, "Mountain", "Forest")
-                                          ]
-        self._List_of_Basic_creatures = [BasicCreature("El_Flamingodingo", 5, 2, 8, "Meadow", "Snow"),
+                                          ], monster)
+        self._Basic_creatures = Deck([BasicCreature("El_Flamingodingo", 5, 2, 8, "Meadow", "Snow"),
                                          BasicCreature("Vertebro", 5, 2, 2, "Desert", "Snow"),
                                          BasicCreature("Vertebro", 5, 2, 2, "Desert", "Snow"),
                                          BasicCreature("Vertebro", 5, 2, 2, "Desert", "Snow"),
@@ -63,8 +63,8 @@ class Schmacc:
                                          BasicCreature("Bush Whacking Nun", 4, 2, 6, "Meadow", "Desert"),
                                          BasicCreature("Platypus-Bear", 5, 2, 5, "Marsh", "Meadow"),
                                          BasicCreature("Platypus-Bear", 5, 2, 5, "Marsh", "Meadow")
-                                         ]
-        self._List_of_Buildings = [Building("Defense Silo", 12, 4),
+                                         ], monster)
+        self._Buildings = Deck([Building("Defense Silo", 12, 4),
                                    Building("Defense Silo", 12, 4),
                                    Building("Defense Silo", 12, 4),
                                    Building("Defense Silo", 12, 4),
@@ -96,8 +96,8 @@ class Schmacc:
                                    Building("The Wall", 6, 7),
                                    Building("The Wall", 6, 7),
                                    Building("The Wall", 6, 7),
-                                   ]
-        self._List_of_Spells = [Spell("Smite"),
+                                   ], building)
+        self._Spells = Deck([Spell("Smite"),
                                 Spell("Horny Rabbit 1"),
                                 Spell("Horny Rabbit 2"),
                                 Spell("Holier Than Thou Rabbit"),
@@ -137,9 +137,11 @@ class Schmacc:
                                 Spell("Celestial Omegahuru"),
                                 Spell("Foggy Woods"),
                                 Spell("Foggy Woods"),
-                                ]
-        self._List_of_players = []
+                                ], spell)
+        self._Players = Deck([], player)
         self._Spells_to_sell = []
+    def return_number_of_players(self):
+        return self._number_of_players
 
     def return_spells(self):
         return self._List_of_Spells
@@ -169,7 +171,7 @@ class Schmacc:
 
         # Prints the contents of every player's land and graveyard, next to their name.
 
-        for i in self._List_of_players:
+        for i in self._List_of_players.return_deck():
             print("\n=======\n\n" + i.name() + "'s shit")
             for a in i.lands():
                 a.print_contents_neatly()
@@ -556,503 +558,503 @@ class Schmacc:
         turn_player.send_to_graveyard(land.monster_slot()[0])
         del land.monster_slot()[0]
 
-    def building_phase(self, turn_player, turn_counter):
-        """
-
-        :param turn_player: player taking turn
-        :return:
-        """
-
-        # This function runs the player through their buildings phase. It starts off by giving the player their
-        # neutered rabbits, food, and magic card for the turn. Then it presents the player with several options: to buy
-        # something, sell something, tribute something, check the game state, or move onto their own turn.
-        print("=======\n")
-        print("It is " + turn_player.name()
-              + "'s Turn, turn " + str(turn_counter + 1) + "\n")
-
-        rabbits_gained = randint(1, 6)
-        turn_player.add_rabbits(rabbits_gained)
-
-        turn_player.add_spell(self._List_of_Spells[0])
-        print(turn_player.name() + " received a spell card this turn")
-        print(turn_player.name() + " now has " + str(len(turn_player.spells())) + " spell(s)\n")
-        del self._List_of_Spells[0]
-
-        food_bonus = 0
-        for land in turn_player.lands():
-            for building in land.building_slots():
-                if building.name() == "Farm":
-                    food_bonus += 1
-        if food_bonus > 0:
-            turn_player.add_food(food_bonus)
-            print(turn_player.name() + " received " + str(food_bonus) + " food this turn")
-            print(turn_player.name() + " now has " + str(turn_player.food()) + " food\n")
-
-        # Now that the player has received their goodies for the turn, they can decide if they want to buy,
-        # sell, or tribute anything
-
-        building_phase_quote = "\nWould you like to buy or sell anything?\n1) Buy something\n2) " \
-                               "Sell Something\n3) Brutally Sacrifice a creature to the RNG gods" \
-                               "\n4) Check shit out\n5) See my spells\n6) Send me to the " \
-                               "main phase bruh"
-        print(turn_player.name() + " has entered the building phase.\nWhat would you like to do?\n")
-        g = ""
-        tried_before = 0
-        while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-            if tried_before > 0:
-                print("\nInvalid Input. Try Again!\n")
-            print(building_phase_quote)
-            g = input("Answer me with a number please:")
-            tried_before += 1
-        g = int(g)
-        while g != 6:
-
-            # If the player inputs 1, they will be asked what kind of card they would like to buy.
-            # Then the appropriate buying function will be applied. The player always has options to back out of buying.
-
-            if g == 1:
-                print("\nWhat would you like to buy?\n1) Magic Card\n2) Building\n3) Basic Creature"
-                      "\n4) Normal Creature\n5) Elite Creature\n6) Nothing, I changed my mind")
-                h = int(input("Answer me with a number please:"))
-
-                if h == 1:
-                    self.buy_something_random("Spell", 2, turn_player, self._List_of_Spells)
-                    h = 6
-
-                elif h == 2:
-                    if self.check_slots(turn_player, "Building"):
-                        self.buy_somthing_specific("Building", 10, turn_player, self._List_of_Buildings)
-                    else:
-                        print("\nYou don't have a free building slot!")
-                    h = 6
-
-                elif h == 3:
-                    if self.check_slots(turn_player, "Creature"):
-                        self.buy_something_random("Creature", 5, turn_player, self._List_of_Basic_creatures)
-                    else:
-                        print("\nYou don't have a free monster slot!")
-                    h = 6
-
-                elif h == 4:
-                    if self.check_slots(turn_player, "Creature"):
-                        self.buy_something_random("Creature", 8, turn_player, self._List_of_Normal_creatures)
-                    else:
-                        print("\nYou dont have a free monster slot!")
-                    h = 6
-
-                if h == 5:
-                    if self.check_slots(turn_player, "Creature"):
-                        self.buy_something_random("Creature", 14, turn_player, self._List_of_Elite_creatures)
-                    else:
-                        print("\nYou dont have a free monster slot!")
-
-                else:
-                    g = ""
-                    tried_before = 0
-                    while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                        if tried_before > 0:
-                            print("\nInvalid Input. Try Again!\n")
-                        print(building_phase_quote)
-                        g = input("Answer me with a number please:")
-                        tried_before += 1
-                    g = int(g)
-
-            # If the player inputs 2, the game will ask them what type of card they would like to sell.
-
-            if g == 2:
-                answer = ""
-                tried_before = 0
-                while bool(answer.isdigit()) == 0 or int(answer) not in [1,2,3]:
-                    if tried_before > 0:
-                        print("\nInvalid input. Try again!\n")
-                    print("\n1) Building\n2) Magic Card\n3) Never mind\n")
-                    answer = input("Which type of card would you like to sell? ")
-                    tried_before += 1
-                answer = int(answer)
-
-                # If the player wants to sell a building, the game will display their lands and ask from which land they
-                # would like to sell. This is too avoid selling wrong copy of a building if a player possesses two
-                # of the same building.
-
-                if answer == 1:
-                    print("=======\n" + turn_player.name() + "'s shit")
-                    land_index = ""
-                    tried_before = 0
-                    while bool(land_index.isdigit()) == 0 or int(land_index) - 1 not in range(len(turn_player.lands()))\
-                            and int(land_index) != 1000:
-                        if tried_before > 0:
-                            print("Invalid input, Try again!\n")
-                        for a in range(len(turn_player.lands())):
-                            print(str(a + 1) + ") " + turn_player.lands()[a].return_name(), ":",
-                                  turn_player.lands()[a].contents())
-                        print("1000) Never Mind")
-                        land_index = input("\nFrom which land would you like to sell?")
-                        tried_before += 1
-                    land_index = int(land_index) - 1
-
-                    # If the player selects a land to sell from, the buildings present on that land will be displayed
-                    # with their current health and defense. The player must then decide which of the (max 2) buildings
-                    # on that land to sell
-
-                    if land_index != 999:
-                        land = turn_player.lands()[land_index]
-                        if len(land.building_slots()) != 0:
-                            building_sold = ""
-                            tried_before = 0
-                            while bool(building_sold.isdigit()) == 0 or \
-                                    building_sold not in range(len(land.building_slots())) and building_sold != 999:
-                                if tried_before > 0:
-                                    print("\nInvalid Input. Try Again.\n")
-                                for a in range(len(land.building_slots())):
-                                    print(str(a + 1) + ") " + land.building_slots()[a].name() + ": Current Health: "
-                                          + str(land.building_slots()[a].current_health()) + " Current Defense: " +
-                                          str(land.building_slots()[a].current_defense()))
-                                print("1000) Never Mind")
-                                building_sold = input("Which building would you like to sell?")
-                                tried_before += 1
-                            building_sold = int(building_sold)
-
-                            # If the player chooses a building to sell, that building will be removed from the land and
-                            # returned to the list of buildings with its stats restored to their original values.
-                            # If the building was below its full health when it was sold, the player will
-                            # receive 3 rabbits. If the health is full, the player receives 5 rabbits.
-
-                            if building_sold != 1000:
-                                print(turn_player.name() + " has sold " + land.building_slots()[building_sold].name())
-                                if land.building_slots()[building_sold].current_health() < \
-                                        land.building_slots()[building_sold].original_health():
-                                    turn_player.add_rabbits(3)
-                                else:
-                                    turn_player.add_rabbits(5)
-                                land.building_slots()[building_sold].return_to_original()
-                                self._List_of_Buildings.append(land.building_slots()[building_sold])
-                                del land.building_slots()[building_sold]
-                        else:
-                            print("There are no buildings on that land! You should know better!!\n")
-
-                # If the player wants to sell a spell, they will be prompted to pick
-                # three spell cards from their hand to sell
-
-                if answer == 2:
-
-                    # If the player has at least three spells, the game will ask the player to inut three spells to sell
-                    # Those cards are removed from the player's hand and placed in a list to be held until that list
-                    # contains three spell cards.
-
-                    if len(turn_player.spells()) >= 3:
-                        for j in range(3):
-                            item_sold = ""
-                            tried_before = 0
-                            while bool(item_sold.isdigit()) == 0 or int(item_sold) \
-                                    not in range(len(turn_player.spells()) + 1) or int(item_sold) == 0:
-                                if tried_before > 0:
-                                    print("Invalid input. Try again!\n")
-                                for i in turn_player.spells():
-                                    print(str(turn_player.spells().index(i) + 1) + ")" + i.name())
-                                item_sold = input("\nYou will need to pick 3 spells to sell, Pick one")
-                                tried_before +=1
-                            item_sold = int(item_sold) - 1
-                            self._Spells_to_sell.append(turn_player.spells()[item_sold])
-                            turn_player.lose_spells(item_sold)
-
-                        # When the Spells to sell list reaches length 3, the player will be reminded of which cards
-                        # they have chosen and asked to confirm their choice. If they confirm, the spells will be sold
-                        # and placed on the bottom of the spell deck, and the player receives 1 neutered rabbit
-
-                        choice = ""
-                        tried_before = 0
-                        while bool(choice.isdigit()) == 0 or int(choice) not in [1, 2]:
-                            if tried_before > 0:
-                                print("Invalid input. Try again!\n")
-                            print(self._Spells_to_sell + "\n1) Yes\n2) No\n")
-                            choice = input("Are you sure you want to sell these cards??")
-                            tried_before += 1
-                        if int(choice) == 1:
-                            for gorf in self._Spells_to_sell:
-                                self._List_of_Spells.append(gorf)
-                                del gorf
-                            turn_player.add_rabbits(1)
-                        else:
-                            print("\nIm so sorry we couldn't come to an agreement!\n")
-                            for gorf in self._Spells_to_sell:
-                                turn_player.spells().append(gorf)
-                                del gorf
-                    else:
-                        print(turn_player.name() + " doesn't have 3 Spells to sell!\n")
-
-                # If the player doesnt want to sell, they will be returned to the origiinal menu of the building phase
-
-                if answer == 3:
-                    g = ""
-                    tried_before = 0
-                    while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                        if tried_before > 0:
-                            print("\nInvalid Input. Try Again!\n")
-                        print(building_phase_quote)
-                        g = input("Answer me with a number please:")
-                        tried_before += 1
-                    g = int(g)
-
-                else:
-                    g = ""
-                    tried_before = 0
-                    while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                        if tried_before > 0:
-                            print("\nInvalid Input. Try Again!\n")
-                        print(building_phase_quote)
-                        g = input("Answer me with a number please:")
-                        tried_before += 1
-                    g = int(g)
-
-            # If the player wants to tribute a monster, they will need to pick a land from which to tribute
-            # (for reasons specified earlier)
-
-            if g == 3:
-                print("=======\n" + turn_player.name() + "'s shit")
-                land_index = ""
-                tried_before = 0
-                while bool(land_index.isdigit()) == 0 or int(land_index) - 1 not in range(len(turn_player.lands()))\
-                        and int(land_index) != 1000:
-                    if tried_before > 0:
-                        print("Invalid input, Try again!\n")
-                    for a in range(len(turn_player.lands())):
-                        print(str(a + 1) + ") " + turn_player.lands()[a].return_name(), ":",
-                              turn_player.lands()[a].contents())
-                    print("1000) Never Mind")
-                    land_index = input("\nFrom which land would you like to ruthlessly murder?")
-                    tried_before += 1
-                land_index = int(land_index) - 1
-
-                # Once the player picks an appropriate land, the monster on that land and its current stats will be
-                # displayed. The player will be asked to confirm their decision to tribute.
-
-                if land_index != 999:
-                    land = turn_player.lands()[land_index]
-                    if len(land.monster_slot()) != 0:
-                        monster_sold = ""
-                        tried_before = 0
-                        while bool(monster_sold.isdigit()) == 0 or int(monster_sold) not in [1, 2]:
-                            if tried_before > 0:
-                                print("Invalid input. Try again!\n")
-                            print(land.monster_slot()[0].name() + ": Current Health: "
-                                  + str(land.monster_slot()[0].current_health()) + " Current Defense: " +
-                                  str(land.monster_slot()[0].current_defense()) + "\n1) Yes\n2) No")
-                            monster_sold = input("Are you sure you want to Sack this Mon??")
-                            tried_before += 1
-
-                        # If the player confirms their choice. The monster is tributed and the player is returned to
-                        # the building phase menu. If they don't confirm they are just sent back to the menu.
-
-                        if int(monster_sold) == 1:
-                            self.tribute_monster(turn_player, land)
-                            g = ""
-                            tried_before = 0
-                            while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                                if tried_before > 0:
-                                    print("\nInvalid Input. Try Again!\n")
-                                print(building_phase_quote)
-                                g = input("Answer me with a number please:")
-                                tried_before += 1
-                            g = int(g)
-
-                        else:
-                            print("\nFine, suit yourself\n")
-                            g = ""
-                            tried_before = 0
-                            while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                                if tried_before > 0:
-                                    print("\nInvalid Input. Try Again!\n")
-                                print(building_phase_quote)
-                                g = input("Answer me with a number please:")
-                                tried_before += 1
-                            g = int(g)
-
-                    else:
-                        print("There are no Monsters on that land! You should know better!!\n")
-                        g = ""
-                        tried_before = 0
-                        while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                            if tried_before > 0:
-                                print("\nInvalid Input. Try Again!\n")
-                            print(building_phase_quote)
-                            g = input("Answer me with a number please:")
-                            tried_before += 1
-                        g = int(g)
-                else:
-                    g = ""
-                    tried_before = 0
-                    while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                        if tried_before > 0:
-                            print("\nInvalid Input. Try Again!\n")
-                        print(building_phase_quote)
-                        g = input("Answer me with a number please:")
-                        tried_before += 1
-                    g = int(g)
-
-            # If the player wants to check shit out they get a print out of the game state including every player's
-            # lands, monsters, and graveyard. Then they are returned to the building phase menu.
-
-            if g == 4:
-                self.print_game_state()
-                g = ""
-                tried_before = 0
-                while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                    if tried_before > 0:
-                        print("\nInvalid Input. Try Again!\n")
-                    print(building_phase_quote)
-                    g = input("Answer me with a number please:")
-                    tried_before += 1
-                g = int(g)
-
-            # If the player wants to see their spells they get their spells displayed to them. then they are returned to
-            # the building phase menu
-
-            if g == 5:
-                turn_player.print_spells_neatly()
-                g = ""
-                tried_before = 0
-                while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                    if tried_before > 0:
-                        print("\nInvalid Input. Try Again!\n")
-                    print(building_phase_quote)
-                    g = input("Answer me with a number please:")
-                    tried_before += 1
-                g = int(g)
-
-        print("The building phase is over, now lets move to the main phase\n\n==========\n\n")
-        self.main_phase(turn_player, 1, turn_counter)
-
-    def main_phase(self, turn_player, phase_number, turn_counter):
-        main_phase_quote_1 = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
-                               "Activate Building effect\n3) Activate Monster effect" \
-                               "\n4) Check shit out\n5) See my spells\n6) Send me to the " \
-                               "battle phase my dude"
-        main_phase_quote_2 = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
-                             "Activate Building effect\n3) Activate Monster effect" \
-                             "\n4) Check shit out\n5) See my spells\n6) End my turn my dude"
-        print("\n\nTurn: " + str(turn_counter) + "\n" + turn_player.name() + " has entered the"
-              "main phase, what would you like to do?\n\n")
-        g = ""
-        tried_before = 0
-        while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-            if tried_before > 0:
-                print("\nInvalid Input. Try Again!\n")
-            if phase_number == 1:
-                print(main_phase_quote_1)
-            if phase_number == 2:
-                print(main_phase_quote_2)
-            g = input("Answer me with a number please:")
-            tried_before += 1
-        g = int(g)
-        while g != 6:
-            if g == 1:
-                # Show the player their spells and prompt them to activate one
-                pass
-
-            if g == 2:
-                # Show the player their buildings and prompt them to activate a building effect
-                pass
-
-            if g == 3:
-                # Show the player their monsters and prompt to activate a monster effect
-                pass
-
-            if g == 4:
-                self.print_game_state()
-                g = ""
-                tried_before = 0
-                while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                    if tried_before > 0:
-                        print("\nInvalid Input. Try Again!\n")
-                    if phase_number == 1:
-                        print(main_phase_quote_1)
-                    if phase_number == 2:
-                        print(main_phase_quote_2)
-                    g = input("Answer me with a number please:")
-                    tried_before += 1
-                g = int(g)
-
-            # If the player wants to see their spells they get their spells displayed to them. then they are returned to
-            # the building phase menu
-
-            if g == 5:
-                turn_player.print_spells_neatly()
-                g = ""
-                tried_before = 0
-                while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
-                    if tried_before > 0:
-                        print("\nInvalid Input. Try Again!\n")
-                    if phase_number == 1:
-                        print(main_phase_quote_1)
-                    if phase_number == 2:
-                        print(main_phase_quote_2)
-                    g = input("Answer me with a number please:")
-                    tried_before += 1
-                g = int(g)
-
-        if phase_number == 1:
-            print("The main phase is over, now lets move to the battle phase\n\n==========\n\n")
-            self.battle_phase(turn_player, turn_counter)
-
-        if phase_number == 2:
-            print("The second main phase is over, and with it ends your turn and your agency over the board situation"
-                  "I bid thee adieu")
-
-    def battle_phase(self, turn_player,turn_counter):
-        battle_phase_quote = "\nWould you like to attack anything? Cause you probably should its a zero drawback play" \
-                             " and if you don't you're a goob" \
-                             "\n1) Attack Someone\n2) " \
-                             "see monster stats\n3) Check shit out\n4) See my spells\n5) Send me to the " \
-                             "second main phase my dude"
-        print("\n\nTurn: " + str(turn_counter) + "\n" + turn_player.name() + " has entered the main" \
-                                                                           " phase, what would you like to do?\n\n")
-        g = ""
-        tried_before = 0
-        while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
-            if tried_before > 0:
-                print("\nInvalid Input. Try Again!\n")
-            print(battle_phase_quote)
-            g = input("Answer me with a number please:")
-            tried_before += 1
-        g = int(g)
-        while g != 5:
-            if g == 1:
-                # Show the player their spells and prompt them to activate one
-                pass
-
-            if g == 2:
-                # Show the player their buildings and prompt them to activate a building effect
-                pass
-
-            if g == 3:
-                self.print_game_state()
-                g = ""
-                tried_before = 0
-                while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
-                    if tried_before > 0:
-                        print("\nInvalid Input. Try Again!\n")
-                    print(battle_phase_quote)
-                    g = input("Answer me with a number please:")
-                    tried_before += 1
-                g = int(g)
-
-            # If the player wants to see their spells they get their spells displayed to them. then they are returned to
-            # the phase menu
-
-            if g == 4:
-                turn_player.print_spells_neatly()
-                g = ""
-                tried_before = 0
-                while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
-                    if tried_before > 0:
-                        print("\nInvalid Input. Try Again!\n")
-                    print(battle_phase_quote)
-                    g = input("Answer me with a number please:")
-                    tried_before += 1
-                g = int(g)
-
-        print("The battle phase is over, now lets move to the second main phase\n\n==========\n\n")
-        self.main_phase(turn_player, 2, turn_counter)
+    # def building_phase(self, turn_player, turn_counter):
+    #     """
+    #
+    #     :param turn_player: player taking turn
+    #     :return:
+    #     """
+    #
+    #     # This function runs the player through their buildings phase. It starts off by giving the player their
+    #     # neutered rabbits, food, and magic card for the turn. Then it presents the player with several options: to buy
+    #     # something, sell something, tribute something, check the game state, or move onto their own turn.
+    #     print("=======\n")
+    #     print("It is " + turn_player.name()
+    #           + "'s Turn, turn " + str(turn_counter + 1) + "\n")
+    #
+    #     rabbits_gained = randint(1, 6)
+    #     turn_player.add_rabbits(rabbits_gained)
+    #
+    #     turn_player.add_spell(self._List_of_Spells[0])
+    #     print(turn_player.name() + " received a spell card this turn")
+    #     print(turn_player.name() + " now has " + str(len(turn_player.spells())) + " spell(s)\n")
+    #     del self._List_of_Spells[0]
+    #
+    #     food_bonus = 0
+    #     for land in turn_player.lands():
+    #         for building in land.building_slots():
+    #             if building.name() == "Farm":
+    #                 food_bonus += 1
+    #     if food_bonus > 0:
+    #         turn_player.add_food(food_bonus)
+    #         print(turn_player.name() + " received " + str(food_bonus) + " food this turn")
+    #         print(turn_player.name() + " now has " + str(turn_player.food()) + " food\n")
+    #
+    #     # Now that the player has received their goodies for the turn, they can decide if they want to buy,
+    #     # sell, or tribute anything
+    #
+    #     building_phase_quote = "\nWould you like to buy or sell anything?\n1) Buy something\n2) " \
+    #                            "Sell Something\n3) Brutally Sacrifice a creature to the RNG gods" \
+    #                            "\n4) Check shit out\n5) See my spells\n6) Send me to the " \
+    #                            "main phase bruh"
+    #     print(turn_player.name() + " has entered the building phase.\nWhat would you like to do?\n")
+    #     g = ""
+    #     tried_before = 0
+    #     while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #         if tried_before > 0:
+    #             print("\nInvalid Input. Try Again!\n")
+    #         print(building_phase_quote)
+    #         g = input("Answer me with a number please:")
+    #         tried_before += 1
+    #     g = int(g)
+    #     while g != 6:
+    #
+    #         # If the player inputs 1, they will be asked what kind of card they would like to buy.
+    #         # Then the appropriate buying function will be applied. The player always has options to back out of buying.
+    #
+    #         if g == 1:
+    #             print("\nWhat would you like to buy?\n1) Magic Card\n2) Building\n3) Basic Creature"
+    #                   "\n4) Normal Creature\n5) Elite Creature\n6) Nothing, I changed my mind")
+    #             h = int(input("Answer me with a number please:"))
+    #
+    #             if h == 1:
+    #                 self.buy_something_random("Spell", 2, turn_player, self._List_of_Spells)
+    #                 h = 6
+    #
+    #             elif h == 2:
+    #                 if self.check_slots(turn_player, "Building"):
+    #                     self.buy_somthing_specific("Building", 10, turn_player, self._List_of_Buildings)
+    #                 else:
+    #                     print("\nYou don't have a free building slot!")
+    #                 h = 6
+    #
+    #             elif h == 3:
+    #                 if self.check_slots(turn_player, "Creature"):
+    #                     self.buy_something_random("Creature", 5, turn_player, self._List_of_Basic_creatures)
+    #                 else:
+    #                     print("\nYou don't have a free monster slot!")
+    #                 h = 6
+    #
+    #             elif h == 4:
+    #                 if self.check_slots(turn_player, "Creature"):
+    #                     self.buy_something_random("Creature", 8, turn_player, self._List_of_Normal_creatures)
+    #                 else:
+    #                     print("\nYou dont have a free monster slot!")
+    #                 h = 6
+    #
+    #             if h == 5:
+    #                 if self.check_slots(turn_player, "Creature"):
+    #                     self.buy_something_random("Creature", 14, turn_player, self._List_of_Elite_creatures)
+    #                 else:
+    #                     print("\nYou dont have a free monster slot!")
+    #
+    #             else:
+    #                 g = ""
+    #                 tried_before = 0
+    #                 while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                     if tried_before > 0:
+    #                         print("\nInvalid Input. Try Again!\n")
+    #                     print(building_phase_quote)
+    #                     g = input("Answer me with a number please:")
+    #                     tried_before += 1
+    #                 g = int(g)
+    #
+    #         # If the player inputs 2, the game will ask them what type of card they would like to sell.
+    #
+    #         if g == 2:
+    #             answer = ""
+    #             tried_before = 0
+    #             while bool(answer.isdigit()) == 0 or int(answer) not in [1,2,3]:
+    #                 if tried_before > 0:
+    #                     print("\nInvalid input. Try again!\n")
+    #                 print("\n1) Building\n2) Magic Card\n3) Never mind\n")
+    #                 answer = input("Which type of card would you like to sell? ")
+    #                 tried_before += 1
+    #             answer = int(answer)
+    #
+    #             # If the player wants to sell a building, the game will display their lands and ask from which land they
+    #             # would like to sell. This is too avoid selling wrong copy of a building if a player possesses two
+    #             # of the same building.
+    #
+    #             if answer == 1:
+    #                 print("=======\n" + turn_player.name() + "'s shit")
+    #                 land_index = ""
+    #                 tried_before = 0
+    #                 while bool(land_index.isdigit()) == 0 or int(land_index) - 1 not in range(len(turn_player.lands()))\
+    #                         and int(land_index) != 1000:
+    #                     if tried_before > 0:
+    #                         print("Invalid input, Try again!\n")
+    #                     for a in range(len(turn_player.lands())):
+    #                         print(str(a + 1) + ") " + turn_player.lands()[a].return_name(), ":",
+    #                               turn_player.lands()[a].contents())
+    #                     print("1000) Never Mind")
+    #                     land_index = input("\nFrom which land would you like to sell?")
+    #                     tried_before += 1
+    #                 land_index = int(land_index) - 1
+    #
+    #                 # If the player selects a land to sell from, the buildings present on that land will be displayed
+    #                 # with their current health and defense. The player must then decide which of the (max 2) buildings
+    #                 # on that land to sell
+    #
+    #                 if land_index != 999:
+    #                     land = turn_player.lands()[land_index]
+    #                     if len(land.building_slots()) != 0:
+    #                         building_sold = ""
+    #                         tried_before = 0
+    #                         while bool(building_sold.isdigit()) == 0 or \
+    #                                 building_sold not in range(len(land.building_slots())) and building_sold != 999:
+    #                             if tried_before > 0:
+    #                                 print("\nInvalid Input. Try Again.\n")
+    #                             for a in range(len(land.building_slots())):
+    #                                 print(str(a + 1) + ") " + land.building_slots()[a].name() + ": Current Health: "
+    #                                       + str(land.building_slots()[a].current_health()) + " Current Defense: " +
+    #                                       str(land.building_slots()[a].current_defense()))
+    #                             print("1000) Never Mind")
+    #                             building_sold = input("Which building would you like to sell?")
+    #                             tried_before += 1
+    #                         building_sold = int(building_sold)
+    #
+    #                         # If the player chooses a building to sell, that building will be removed from the land and
+    #                         # returned to the list of buildings with its stats restored to their original values.
+    #                         # If the building was below its full health when it was sold, the player will
+    #                         # receive 3 rabbits. If the health is full, the player receives 5 rabbits.
+    #
+    #                         if building_sold != 1000:
+    #                             print(turn_player.name() + " has sold " + land.building_slots()[building_sold].name())
+    #                             if land.building_slots()[building_sold].current_health() < \
+    #                                     land.building_slots()[building_sold].original_health():
+    #                                 turn_player.add_rabbits(3)
+    #                             else:
+    #                                 turn_player.add_rabbits(5)
+    #                             land.building_slots()[building_sold].return_to_original()
+    #                             self._List_of_Buildings.append(land.building_slots()[building_sold])
+    #                             del land.building_slots()[building_sold]
+    #                     else:
+    #                         print("There are no buildings on that land! You should know better!!\n")
+    #
+    #             # If the player wants to sell a spell, they will be prompted to pick
+    #             # three spell cards from their hand to sell
+    #
+    #             if answer == 2:
+    #
+    #                 # If the player has at least three spells, the game will ask the player to inut three spells to sell
+    #                 # Those cards are removed from the player's hand and placed in a list to be held until that list
+    #                 # contains three spell cards.
+    #
+    #                 if len(turn_player.spells()) >= 3:
+    #                     for j in range(3):
+    #                         item_sold = ""
+    #                         tried_before = 0
+    #                         while bool(item_sold.isdigit()) == 0 or int(item_sold) \
+    #                                 not in range(len(turn_player.spells()) + 1) or int(item_sold) == 0:
+    #                             if tried_before > 0:
+    #                                 print("Invalid input. Try again!\n")
+    #                             for i in turn_player.spells():
+    #                                 print(str(turn_player.spells().index(i) + 1) + ")" + i.name())
+    #                             item_sold = input("\nYou will need to pick 3 spells to sell, Pick one")
+    #                             tried_before +=1
+    #                         item_sold = int(item_sold) - 1
+    #                         self._Spells_to_sell.append(turn_player.spells()[item_sold])
+    #                         turn_player.lose_spells(item_sold)
+    #
+    #                     # When the Spells to sell list reaches length 3, the player will be reminded of which cards
+    #                     # they have chosen and asked to confirm their choice. If they confirm, the spells will be sold
+    #                     # and placed on the bottom of the spell deck, and the player receives 1 neutered rabbit
+    #
+    #                     choice = ""
+    #                     tried_before = 0
+    #                     while bool(choice.isdigit()) == 0 or int(choice) not in [1, 2]:
+    #                         if tried_before > 0:
+    #                             print("Invalid input. Try again!\n")
+    #                         print(self._Spells_to_sell + "\n1) Yes\n2) No\n")
+    #                         choice = input("Are you sure you want to sell these cards??")
+    #                         tried_before += 1
+    #                     if int(choice) == 1:
+    #                         for gorf in self._Spells_to_sell:
+    #                             self._List_of_Spells.append(gorf)
+    #                             del gorf
+    #                         turn_player.add_rabbits(1)
+    #                     else:
+    #                         print("\nIm so sorry we couldn't come to an agreement!\n")
+    #                         for gorf in self._Spells_to_sell:
+    #                             turn_player.spells().append(gorf)
+    #                             del gorf
+    #                 else:
+    #                     print(turn_player.name() + " doesn't have 3 Spells to sell!\n")
+    #
+    #             # If the player doesnt want to sell, they will be returned to the origiinal menu of the building phase
+    #
+    #             if answer == 3:
+    #                 g = ""
+    #                 tried_before = 0
+    #                 while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                     if tried_before > 0:
+    #                         print("\nInvalid Input. Try Again!\n")
+    #                     print(building_phase_quote)
+    #                     g = input("Answer me with a number please:")
+    #                     tried_before += 1
+    #                 g = int(g)
+    #
+    #             else:
+    #                 g = ""
+    #                 tried_before = 0
+    #                 while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                     if tried_before > 0:
+    #                         print("\nInvalid Input. Try Again!\n")
+    #                     print(building_phase_quote)
+    #                     g = input("Answer me with a number please:")
+    #                     tried_before += 1
+    #                 g = int(g)
+    #
+    #         # If the player wants to tribute a monster, they will need to pick a land from which to tribute
+    #         # (for reasons specified earlier)
+    #
+    #         if g == 3:
+    #             print("=======\n" + turn_player.name() + "'s shit")
+    #             land_index = ""
+    #             tried_before = 0
+    #             while bool(land_index.isdigit()) == 0 or int(land_index) - 1 not in range(len(turn_player.lands()))\
+    #                     and int(land_index) != 1000:
+    #                 if tried_before > 0:
+    #                     print("Invalid input, Try again!\n")
+    #                 for a in range(len(turn_player.lands())):
+    #                     print(str(a + 1) + ") " + turn_player.lands()[a].return_name(), ":",
+    #                           turn_player.lands()[a].contents())
+    #                 print("1000) Never Mind")
+    #                 land_index = input("\nFrom which land would you like to ruthlessly murder?")
+    #                 tried_before += 1
+    #             land_index = int(land_index) - 1
+    #
+    #             # Once the player picks an appropriate land, the monster on that land and its current stats will be
+    #             # displayed. The player will be asked to confirm their decision to tribute.
+    #
+    #             if land_index != 999:
+    #                 land = turn_player.lands()[land_index]
+    #                 if len(land.monster_slot()) != 0:
+    #                     monster_sold = ""
+    #                     tried_before = 0
+    #                     while bool(monster_sold.isdigit()) == 0 or int(monster_sold) not in [1, 2]:
+    #                         if tried_before > 0:
+    #                             print("Invalid input. Try again!\n")
+    #                         print(land.monster_slot()[0].name() + ": Current Health: "
+    #                               + str(land.monster_slot()[0].current_health()) + " Current Defense: " +
+    #                               str(land.monster_slot()[0].current_defense()) + "\n1) Yes\n2) No")
+    #                         monster_sold = input("Are you sure you want to Sack this Mon??")
+    #                         tried_before += 1
+    #
+    #                     # If the player confirms their choice. The monster is tributed and the player is returned to
+    #                     # the building phase menu. If they don't confirm they are just sent back to the menu.
+    #
+    #                     if int(monster_sold) == 1:
+    #                         self.tribute_monster(turn_player, land)
+    #                         g = ""
+    #                         tried_before = 0
+    #                         while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                             if tried_before > 0:
+    #                                 print("\nInvalid Input. Try Again!\n")
+    #                             print(building_phase_quote)
+    #                             g = input("Answer me with a number please:")
+    #                             tried_before += 1
+    #                         g = int(g)
+    #
+    #                     else:
+    #                         print("\nFine, suit yourself\n")
+    #                         g = ""
+    #                         tried_before = 0
+    #                         while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                             if tried_before > 0:
+    #                                 print("\nInvalid Input. Try Again!\n")
+    #                             print(building_phase_quote)
+    #                             g = input("Answer me with a number please:")
+    #                             tried_before += 1
+    #                         g = int(g)
+    #
+    #                 else:
+    #                     print("There are no Monsters on that land! You should know better!!\n")
+    #                     g = ""
+    #                     tried_before = 0
+    #                     while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                         if tried_before > 0:
+    #                             print("\nInvalid Input. Try Again!\n")
+    #                         print(building_phase_quote)
+    #                         g = input("Answer me with a number please:")
+    #                         tried_before += 1
+    #                     g = int(g)
+    #             else:
+    #                 g = ""
+    #                 tried_before = 0
+    #                 while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                     if tried_before > 0:
+    #                         print("\nInvalid Input. Try Again!\n")
+    #                     print(building_phase_quote)
+    #                     g = input("Answer me with a number please:")
+    #                     tried_before += 1
+    #                 g = int(g)
+    #
+    #         # If the player wants to check shit out they get a print out of the game state including every player's
+    #         # lands, monsters, and graveyard. Then they are returned to the building phase menu.
+    #
+    #         if g == 4:
+    #             self.print_game_state()
+    #             g = ""
+    #             tried_before = 0
+    #             while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                 if tried_before > 0:
+    #                     print("\nInvalid Input. Try Again!\n")
+    #                 print(building_phase_quote)
+    #                 g = input("Answer me with a number please:")
+    #                 tried_before += 1
+    #             g = int(g)
+    #
+    #         # If the player wants to see their spells they get their spells displayed to them. then they are returned to
+    #         # the building phase menu
+    #
+    #         if g == 5:
+    #             turn_player.print_spells_neatly()
+    #             g = ""
+    #             tried_before = 0
+    #             while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                 if tried_before > 0:
+    #                     print("\nInvalid Input. Try Again!\n")
+    #                 print(building_phase_quote)
+    #                 g = input("Answer me with a number please:")
+    #                 tried_before += 1
+    #             g = int(g)
+    #
+    #     print("The building phase is over, now lets move to the main phase\n\n==========\n\n")
+    #     self.main_phase(turn_player, 1, turn_counter)
+    #
+    # def main_phase(self, turn_player, phase_number, turn_counter):
+    #     main_phase_quote_1 = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
+    #                            "Activate Building effect\n3) Activate Monster effect" \
+    #                            "\n4) Check shit out\n5) See my spells\n6) Send me to the " \
+    #                            "battle phase my dude"
+    #     main_phase_quote_2 = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
+    #                          "Activate Building effect\n3) Activate Monster effect" \
+    #                          "\n4) Check shit out\n5) See my spells\n6) End my turn my dude"
+    #     print("\n\nTurn: " + str(turn_counter) + "\n" + turn_player.name() + " has entered the"
+    #           "main phase, what would you like to do?\n\n")
+    #     g = ""
+    #     tried_before = 0
+    #     while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #         if tried_before > 0:
+    #             print("\nInvalid Input. Try Again!\n")
+    #         if phase_number == 1:
+    #             print(main_phase_quote_1)
+    #         if phase_number == 2:
+    #             print(main_phase_quote_2)
+    #         g = input("Answer me with a number please:")
+    #         tried_before += 1
+    #     g = int(g)
+    #     while g != 6:
+    #         if g == 1:
+    #             # Show the player their spells and prompt them to activate one
+    #             pass
+    #
+    #         if g == 2:
+    #             # Show the player their buildings and prompt them to activate a building effect
+    #             pass
+    #
+    #         if g == 3:
+    #             # Show the player their monsters and prompt to activate a monster effect
+    #             pass
+    #
+    #         if g == 4:
+    #             self.print_game_state()
+    #             g = ""
+    #             tried_before = 0
+    #             while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                 if tried_before > 0:
+    #                     print("\nInvalid Input. Try Again!\n")
+    #                 if phase_number == 1:
+    #                     print(main_phase_quote_1)
+    #                 if phase_number == 2:
+    #                     print(main_phase_quote_2)
+    #                 g = input("Answer me with a number please:")
+    #                 tried_before += 1
+    #             g = int(g)
+    #
+    #         # If the player wants to see their spells they get their spells displayed to them. then they are returned to
+    #         # the building phase menu
+    #
+    #         if g == 5:
+    #             turn_player.print_spells_neatly()
+    #             g = ""
+    #             tried_before = 0
+    #             while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    #                 if tried_before > 0:
+    #                     print("\nInvalid Input. Try Again!\n")
+    #                 if phase_number == 1:
+    #                     print(main_phase_quote_1)
+    #                 if phase_number == 2:
+    #                     print(main_phase_quote_2)
+    #                 g = input("Answer me with a number please:")
+    #                 tried_before += 1
+    #             g = int(g)
+    #
+    #     if phase_number == 1:
+    #         print("The main phase is over, now lets move to the battle phase\n\n==========\n\n")
+    #         self.battle_phase(turn_player, turn_counter)
+    #
+    #     if phase_number == 2:
+    #         print("The second main phase is over, and with it ends your turn and your agency over the board situation"
+    #               "I bid thee adieu")
+    #
+    # def battle_phase(self, turn_player,turn_counter):
+    #     battle_phase_quote = "\nWould you like to attack anything? Cause you probably should its a zero drawback play" \
+    #                          " and if you don't you're a goob" \
+    #                          "\n1) Attack Someone\n2) " \
+    #                          "see monster stats\n3) Check shit out\n4) See my spells\n5) Send me to the " \
+    #                          "second main phase my dude"
+    #     print("\n\nTurn: " + str(turn_counter) + "\n" + turn_player.name() + " has entered the main" \
+    #                                                                        " phase, what would you like to do?\n\n")
+    #     g = ""
+    #     tried_before = 0
+    #     while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
+    #         if tried_before > 0:
+    #             print("\nInvalid Input. Try Again!\n")
+    #         print(battle_phase_quote)
+    #         g = input("Answer me with a number please:")
+    #         tried_before += 1
+    #     g = int(g)
+    #     while g != 5:
+    #         if g == 1:
+    #             # Show the player their spells and prompt them to activate one
+    #             pass
+    #
+    #         if g == 2:
+    #             # Show the player their buildings and prompt them to activate a building effect
+    #             pass
+    #
+    #         if g == 3:
+    #             self.print_game_state()
+    #             g = ""
+    #             tried_before = 0
+    #             while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
+    #                 if tried_before > 0:
+    #                     print("\nInvalid Input. Try Again!\n")
+    #                 print(battle_phase_quote)
+    #                 g = input("Answer me with a number please:")
+    #                 tried_before += 1
+    #             g = int(g)
+    #
+    #         # If the player wants to see their spells they get their spells displayed to them. then they are returned to
+    #         # the phase menu
+    #
+    #         if g == 4:
+    #             turn_player.print_spells_neatly()
+    #             g = ""
+    #             tried_before = 0
+    #             while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
+    #                 if tried_before > 0:
+    #                     print("\nInvalid Input. Try Again!\n")
+    #                 print(battle_phase_quote)
+    #                 g = input("Answer me with a number please:")
+    #                 tried_before += 1
+    #             g = int(g)
+    #
+    #     print("The battle phase is over, now lets move to the second main phase\n\n==========\n\n")
+    #     self.main_phase(turn_player, 2, turn_counter)
 
     # def game_sequence(self):
     #
