@@ -18,7 +18,7 @@ class Land:
     def __repr__(self):
         return self._name
 
-    def return_name(self):
+    def name(self):
         return self._name
 
     def add_monster(self, monster):
@@ -43,13 +43,26 @@ class Land:
         buildings = []
         for building in self._contents[1]:
             buildings.append(building.name())
-        print(self._name + " : Monsters: " + ', '.join(monsters) +
+        print(self._name + ": Monsters: " + ', '.join(monsters) +
               "  |||  Buildings: " + ', '.join(buildings))
 
+    def print_monsters_in_depth(self):
+        print(self._name + ": " + self._contents[0][0].name() + "\nHealth: " +
+              str(self._contents[0][0].current_health())+ "/" +
+              str(self._contents[0][0].original_health()) + "\nDefense: " +
+              str(self._contents[0][0].current_defense()) + "/" +
+              str(self._contents[0][0].original_defense()) +
+              "\nAttack: " + str(self._contents[0][0].current_attack()) + "/" +
+              str(self._contents[0][0].original_attack()))
+
     def monster_slot(self):
-        return self._contents[0]
+        return self._contents[0][0]
 
         # Returns whatever monster is on that land
+    def length_monster_list(self):
+        return len(self.contents()[0])
+
+        # Useful in determining whether or not there is a monster on the land
 
     def building_slots(self):
         return self._contents[1]

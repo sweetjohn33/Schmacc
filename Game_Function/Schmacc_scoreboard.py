@@ -1,7 +1,8 @@
-from Game Function.schamcc import Schmacc
-from Phases import start_game
-from Phases import building_phase
-from
+from Game_Function.schamcc import Schmacc
+from Game_Function.Phases import start_game
+from Game_Function.Phases import building_phase
+from Game_Function.Phases import main_phase
+from Game_Function.Phases import battle_phase
 
 # welcome
 
