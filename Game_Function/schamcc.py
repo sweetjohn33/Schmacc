@@ -45,10 +45,10 @@ class Schmacc:
                                           NormalCreature("Big Bad Blowing Butcher", 5, 2, 7, "Mountain", "Forest")
                                           ], "creature")
         self._Basic_creatures = Deck([BasicCreature("El_Flamingodingo", 5, 2, 8, "Meadow", "Snow"),
-                                         BasicCreature("Vertebro", 5, 2, 2, "Desert", "Snow"),
-                                         BasicCreature("Vertebro", 5, 2, 2, "Desert", "Snow"),
-                                         BasicCreature("Vertebro", 5, 2, 2, "Desert", "Snow"),
-                                         BasicCreature("Vertebro", 5, 2, 2, "Desert", "Snow"),
+                                         BasicCreature("Vertebro", 5, 5, 2, "Desert", "Snow"),
+                                         BasicCreature("Vertebro", 5, 5, 2, "Desert", "Snow"),
+                                         BasicCreature("Vertebro", 5, 5, 2, "Desert", "Snow"),
+                                         BasicCreature("Vertebro", 5, 5, 2, "Desert", "Snow"),
                                          BasicCreature("Sneaky Soviet Mole", 4, 6, 2, "Meadow", "Snow"),
                                          BasicCreature("Sneaky Soviet Mole", 4, 6, 2, "Meadow", "Snow"),
                                          BasicCreature("Penguin Knight", 2, 5, 5, "Snow", "Desert"),
@@ -178,7 +178,7 @@ class Schmacc:
         # Prints the contents of every player's land and graveyard, next to their name.
 
         for i in self._Players.return_deck():
-            print("\n=======\n\n" + i.name() + "'s shit")
+            print("\n=======\n\n" + i.name() + "'s shit:\n")
             for a in i.lands():
                 a.print_contents_neatly()
             gravyyard = []
@@ -188,7 +188,7 @@ class Schmacc:
 
     def print_monster_stats(self):
         for i in self._Players.return_deck():
-            print("\n=======\n\n" + i.name() + "'s shit")
+            print("\n=======\n\n" + i.name() + "'s shit:\n")
             for a in i.lands():
                 a.print_monsters_in_depth()
 
@@ -209,7 +209,7 @@ class Schmacc:
         if card == "Creature":
             slots_taken = 0
             for land in player.lands():
-                if len(land.monster_slot()) == 1:
+                if land.length_monster_list() == 1:
                     slots_taken += 1
             if len(player.lands()) == slots_taken:
                 return False

@@ -46,7 +46,7 @@ class Player:
 
     def subtract_rabbits(self, number):
         self._Neutered_rabbits -= number
-        print(self._name + " payed " + str(number) + " Neutered Rabbits.")
+        print( "\n" + self._name + " payed " + str(number) + " Neutered Rabbits.")
         print(self._name + " now has " + str(self.rabbit_count()) + " Neutered Rabbit(s)\n")
 
     def creatures(self) -> list:
@@ -360,17 +360,19 @@ class Player:
                 self.subtract_rabbits(cost)
                 if deck.return_object_type() == "spell":
                     self.add_spell(pist[0])
-                    print("You have bought a", pist[0].name())
+                    print("\nYou have bought a", pist[0].name() + "\n")
                     deck.take_card_off_top()
 
                 elif deck.return_object_type() == "creature":
                     rand_index = randint(0, len(pist) - 1)
                     self.put_monster_on_land(pist[rand_index])
+                    print("\nYou have bought a", pist[rand_index].name() + "\n")
                     deck.take_card_out(rand_index)
 
                 elif deck.return_object_type() == "building":
                     rand_index = randint(0, len(pist) - 1)
                     self.put_building_on_land(pist[rand_index])
+                    print("\nYou have bought a", pist[rand_index].name() + "\n")
                     deck.take_card_out(rand_index)
             else:
                 print("You need" + str(cost) + "rabbits to buy that! You have" + str(self.rabbit_count()) +

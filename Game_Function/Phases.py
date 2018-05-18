@@ -225,8 +225,8 @@ def building_phase(game, turn_player):
                     if len(land.building_slots()) != 0:
                         building_sold = ""
                         tried_before = 0
-                        while bool(building_sold.isdigit()) == 0 or \
-                                building_sold not in range(len(land.building_slots())) and building_sold != 999:
+                        while bool(building_sold.isdigit()) == 0 or int(building_sold) - 1 not in \
+                                range(len(land.building_slots())) and int(building_sold) != 1000:
                             if tried_before > 0:
                                 print("\nInvalid Input. Try Again.\n")
                             for a in range(len(land.building_slots())):
@@ -234,16 +234,16 @@ def building_phase(game, turn_player):
                                       + str(land.building_slots()[a].current_health()) + " Current Defense: " +
                                       str(land.building_slots()[a].current_defense()))
                             print("1000) Never Mind")
-                            building_sold = input("Which building would you like to sell?")
+                            building_sold = input("Which building would you like to sell? ")
                             tried_before += 1
-                        building_sold = int(building_sold)
+                        building_sold = int(building_sold) - 1
 
                         # If the player chooses a building to sell, that building will be removed from the land and
                         # returned to the list of buildings with its stats restored to their original values.
                         # If the building was below its full health when it was sold, the player will
                         # receive 3 rabbits. If the health is full, the player receives 5 rabbits.
 
-                        if building_sold != 1000:
+                        if building_sold != 999:
                             print(turn_player.name() + " has sold " + land.building_slots()[building_sold].name())
                             if land.building_slots()[building_sold].current_health() < \
                                     land.building_slots()[building_sold].original_health():
@@ -270,14 +270,14 @@ def building_phase(game, turn_player):
                     for j in range(3):
                         item_sold = ""
                         tried_before = 0
-                        while bool(item_sold.isdigit()) == 0 or int(item_sold) \
+                        while not item_sold.isdigit() or int(item_sold) \
                                 not in range(len(turn_player.spells()) + 1) or int(item_sold) == 0:
                             if tried_before > 0:
                                 print("Invalid input. Try again!\n")
                             for i in turn_player.spells():
                                 print(str(turn_player.spells().index(i) + 1) + ")" + i.name())
                             item_sold = input("\nYou will need to pick 3 spells to sell, Pick one")
-                            tried_before +=1
+                            tried_before += 1
                         item_sold = int(item_sold) - 1
                         spells_to_sell.append(turn_player.spells()[item_sold])
                         turn_player.lose_spells(item_sold)
@@ -288,7 +288,7 @@ def building_phase(game, turn_player):
 
                     choice = ""
                     tried_before = 0
-                    while bool(choice.isdigit()) == 0 or int(choice) not in [1, 2]:
+                    while not choice.isdigit() or int(choice) not in [1, 2]:
                         if tried_before > 0:
                             print("Invalid input. Try again!\n")
                         print(spells_to_sell + "\n1) Yes\n2) No\n")
@@ -344,15 +344,15 @@ def building_phase(game, turn_player):
 
             if land_index != 999:
                 land = turn_player.lands()[land_index]
-                if len(land.monster_slot()) != 0:
+                if land.length_monster_list() != 0:
                     monster_sold = ""
                     tried_before = 0
                     while bool(monster_sold.isdigit()) == 0 or int(monster_sold) not in [1, 2]:
                         if tried_before > 0:
                             print("Invalid input. Try again!\n")
-                        print(land.monster_slot()[0].name() + ": Current Health: "
-                              + str(land.monster_slot()[0].current_health()) + " Current Defense: " +
-                              str(land.monster_slot()[0].current_defense()) + "\n1) Yes\n2) No")
+                        print(land.monster_slot().name() + ": Current Health: "
+                              + str(land.monster_slot().current_health()) + " Current Defense: " +
+                              str(land.monster_slot().current_defense()) + "\n1) Yes\n2) No")
                         monster_sold = input("Are you sure you want to Sack this Mon??")
                         tried_before += 1
 
@@ -438,6 +438,7 @@ def building_phase(game, turn_player):
     print("The building phase is over, now lets move to the main phase\n\n==========\n\n")
     main_phase(game, turn_player, 1)
 
+
 def main_phase(game, turn_player, phase_number):
     main_phase_quote_1 = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
                            "Activate Building effect\n3) Activate Monster effect" \
@@ -446,7 +447,7 @@ def main_phase(game, turn_player, phase_number):
     main_phase_quote_2 = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
                          "Activate Building effect\n3) Activate Monster effect" \
                          "\n4) Check shit out\n5) See my spells\n6) End my turn my dude"
-    print("\n\nTurn: " + str(game.return_turn_counter()) + "\n" + turn_player.name() + " has entered the"
+    print("\n\nTurn: " + str(game.return_turn_counter() + 1) + "\n" + turn_player.name() + " has entered the "
           "main phase, what would you like to do?\n\n")
     g = ""
     tried_before = 0
@@ -525,8 +526,8 @@ def battle_phase(game, turn_player):
                          "\n1) Attack Someone\n2) " \
                          "see monster stats\n3) Check shit out\n4) See my spells\n5) Send me to the " \
                          "second main phase my dude"
-    print("\n\nTurn: " + str(game.return_turn_counter()) + "\n" + turn_player.name() + \
-          " has entered the main phase, what would you like to do?\n\n")
+    print("\n\nTurn: " + str(game.return_turn_counter() + 1) + "\n" + turn_player.name() + \
+          " has entered the battle phase, what would you like to do?\n\n")
     g = ""
     tried_before = 0
     while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
