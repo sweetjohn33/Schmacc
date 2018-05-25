@@ -7,19 +7,27 @@ class Land:
     # and the second list contains their buildings. A land should only be able to have at the most
     # one monster and two buildings at a time
 
-    def __init__(self, name):
+    def __init__(self, name, owner=""):
         """
 
         :param name: The name of the class
         """
         self._contents = [[], []]
         self._name = name
+        self._empty = False
+        self._owner = owner
 
     def __repr__(self):
         return self._name
 
     def name(self):
         return self._name
+
+    def owner(self):
+        return self._owner
+
+    def set_owner(self, player):
+        self._owner = player.name()
 
     def add_monster(self, monster):
         self._contents[0].append(monster)
@@ -68,6 +76,10 @@ class Land:
         return self._contents[1]
 
         # Returns the list of buildings on that land
+
+    def check_if_empty(self):
+        if len(self._contents[1]) == 0 and self.length_monster_list() == 0:
+            return True
 
 
 

@@ -5,6 +5,39 @@ from Objects.Land import Land
 from Objects.player import Player
 from random import randint
 
+# def start_game_random(game):
+#     
+#     for i in range(game.return_number_of_players()):
+#         new_player = Player(i)
+#         game.return_players().put_card_on_top(new_player)
+#     game.return_players().shuffle_deck()
+# 
+#     unassigned_lands = Deck([Land("Forest"), Land("Forest"), Land("Meadow"), Land("Meadow"), Land("Mountain"),
+#                              Land("Mountain"), Land("Snow"), Land("Snow"), Land("Marsh"), Land("Marsh"), Land("Desert"),
+#                              Land("Desert")], "land")
+# 
+#     while unassigned_lands.return_count() != 0:
+#         for player in game.return_players().return_deck():
+#             rand_index = randint(0, unassigned_lands.return_count() - 1)
+#             player.add_land(unassigned_lands.return_card_in_deck(rand_index))
+#             unassigned_lands.take_card_out(rand_index)
+#     
+#     for player in game.return_players().return_deck():
+#         for i in range(len(player.lands())):
+#             rand_index = randint(0, game.return_basic_creatures().return_count() - 1)
+#             player.add_creature(game.return_basic_creatures().return_deck()[rand_index])
+# 
+#             game.return_basic_creatures().take_card_out(rand_index)
+# 
+#             rand_index2 = randint(0, game.return_buildings().return_count() - 1)
+#             player.add_building(game.return_buildings().return_deck()[rand_index2])
+# 
+#             game.return_buildings().take_card_out(rand_index2)
+# 
+#     for a in range(len(player.creatures())):
+#         player.put_monster_on_land(player.creatures()[a])
+
+    
 
 def start_game(game):
     # This function starts the game by first shuffling the spell deck, and then initializing the 12 lands
@@ -13,7 +46,6 @@ def start_game(game):
     # random creature to each player for each land they control. The players then place their monsters and buildings
     # on their land one by one. Then the game is setup!
 
-    game.return_spells().shuffle_deck()
     print("\n=========\nHere is the order the spell cards should be in:\n")
     print(game.return_spells())
     print("\n=========\n")
@@ -36,7 +68,9 @@ def start_game(game):
         for player in game.return_players().return_deck():
             rand_index = randint(0, unassigned_lands.return_count() - 1)
             player.add_land(unassigned_lands.return_card_in_deck(rand_index))
+            player.lands()[-1].set_owner(player)
             unassigned_lands.take_card_out(rand_index)
+
 
     # Each player receives one random land and one random building for every land they own. These objects
     # are stored in the players list of buildings and list of monsters
@@ -119,19 +153,19 @@ def building_phase(game, turn_player):
 
     building_phase_quote = "\nWould you like to buy or sell anything?\n1) Buy something\n2) " \
                            "Sell Something\n3) Brutally Sacrifice a creature to the RNG gods" \
-                           "\n4) Check shit out\n5) See my spells\n6) Send me to the " \
+                           "\n4) Check shit out\n5) See my spells\n6) Buy a land\n7) Send me to the " \
                            "main phase bruh"
     print(turn_player.name() + " has entered the building phase.\nWhat would you like to do?\n")
     g = ""
     tried_before = 0
-    while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    while not g.isdigit() or int(g) not in range(1, 8):
         if tried_before > 0:
             print("\nInvalid Input. Try Again!\n")
         print(building_phase_quote)
         g = input("Answer me with a number please:")
         tried_before += 1
     g = int(g)
-    while g != 6:
+    while g != 7:
 
         # If the player inputs 1, they will be asked what kind of card they would like to buy.
         # Then the appropriate buying function will be applied. The player always has options to back out of buying.
@@ -175,7 +209,7 @@ def building_phase(game, turn_player):
             else:
                 g = ""
                 tried_before = 0
-                while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+                while not g.isdigit() or int(g) not in range(1, 8):
                     if tried_before > 0:
                         print("\nInvalid Input. Try Again!\n")
                     print(building_phase_quote)
@@ -188,7 +222,7 @@ def building_phase(game, turn_player):
         if g == 2:
             answer = ""
             tried_before = 0
-            while bool(answer.isdigit()) == 0 or int(answer) not in [1,2,3]:
+            while not answer.isdigit() or int(answer) not in [1,2,3]:
                 if tried_before > 0:
                     print("\nInvalid input. Try again!\n")
                 print("\n1) Building\n2) Magic Card\n3) Never mind\n")
@@ -204,7 +238,7 @@ def building_phase(game, turn_player):
                 print("=======\n" + turn_player.name() + "'s shit")
                 land_index = ""
                 tried_before = 0
-                while bool(land_index.isdigit()) == 0 or int(land_index) - 1 not in range(len(turn_player.lands()))\
+                while not land_index.isdigit() or int(land_index) - 1 not in range(len(turn_player.lands()))\
                         and int(land_index) != 1000:
                     if tried_before > 0:
                         print("Invalid input, Try again!\n")
@@ -225,7 +259,7 @@ def building_phase(game, turn_player):
                     if len(land.building_slots()) != 0:
                         building_sold = ""
                         tried_before = 0
-                        while bool(building_sold.isdigit()) == 0 or int(building_sold) - 1 not in \
+                        while not building_sold.isdigit() or int(building_sold) - 1 not in \
                                 range(len(land.building_slots())) and int(building_sold) != 1000:
                             if tried_before > 0:
                                 print("\nInvalid Input. Try Again.\n")
@@ -312,7 +346,7 @@ def building_phase(game, turn_player):
             else:
                 g = ""
                 tried_before = 0
-                while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+                while not g.isdigit() or int(g) not in range(1, 8):
                     if tried_before > 0:
                         print("\nInvalid Input. Try Again!\n")
                     print(building_phase_quote)
@@ -327,7 +361,7 @@ def building_phase(game, turn_player):
             print("=======\n" + turn_player.name() + "'s shit")
             land_index = ""
             tried_before = 0
-            while bool(land_index.isdigit()) == 0 or int(land_index) - 1 not in range(len(turn_player.lands()))\
+            while not land_index.isdigit() or int(land_index) - 1 not in range(len(turn_player.lands()))\
                     and int(land_index) != 1000:
                 if tried_before > 0:
                     print("Invalid input, Try again!\n")
@@ -347,7 +381,7 @@ def building_phase(game, turn_player):
                 if land.length_monster_list() != 0:
                     monster_sold = ""
                     tried_before = 0
-                    while bool(monster_sold.isdigit()) == 0 or int(monster_sold) not in [1, 2]:
+                    while not monster_sold.isdigit() or int(monster_sold) not in [1, 2]:
                         if tried_before > 0:
                             print("Invalid input. Try again!\n")
                         print(land.monster_slot().name() + ": Current Health: "
@@ -363,7 +397,7 @@ def building_phase(game, turn_player):
                         turn_player.tribute_monster(game, land)
                         g = ""
                         tried_before = 0
-                        while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+                        while not g.isdigit() or int(g) not in range(1, 8):
                             if tried_before > 0:
                                 print("\nInvalid Input. Try Again!\n")
                             print(building_phase_quote)
@@ -375,7 +409,7 @@ def building_phase(game, turn_player):
                         print("\nFine, suit yourself\n")
                         g = ""
                         tried_before = 0
-                        while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+                        while not g.isdigit() or int(g) not in range(1, 8):
                             if tried_before > 0:
                                 print("\nInvalid Input. Try Again!\n")
                             print(building_phase_quote)
@@ -387,7 +421,7 @@ def building_phase(game, turn_player):
                     print("There are no Monsters on that land! You should know better!!\n")
                     g = ""
                     tried_before = 0
-                    while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+                    while not g.isdigit() or int(g) not in range(1, 8):
                         if tried_before > 0:
                             print("\nInvalid Input. Try Again!\n")
                         print(building_phase_quote)
@@ -397,7 +431,7 @@ def building_phase(game, turn_player):
             else:
                 g = ""
                 tried_before = 0
-                while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+                while not g.isdigit() or int(g) not in range(1, 8):
                     if tried_before > 0:
                         print("\nInvalid Input. Try Again!\n")
                     print(building_phase_quote)
@@ -412,7 +446,7 @@ def building_phase(game, turn_player):
             game.print_game_state()
             g = ""
             tried_before = 0
-            while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+            while not g.isdigit() or int(g) not in range(1, 8):
                 if tried_before > 0:
                     print("\nInvalid Input. Try Again!\n")
                 print(building_phase_quote)
@@ -427,13 +461,33 @@ def building_phase(game, turn_player):
             turn_player.print_spells_neatly()
             g = ""
             tried_before = 0
-            while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+            while not g.isdigit() or int(g) not in range(1, 8):
                 if tried_before > 0:
                     print("\nInvalid Input. Try Again!\n")
                 print(building_phase_quote)
                 g = input("Answer me with a number please:")
                 tried_before += 1
             g = int(g)
+
+        if g == 6:
+            if game.check_land_avail():
+                if turn_player.rabbit_count() > 2:
+                    turn_player.buy_land(game)
+                else:
+                    print("You don't have enough rabbits bro! get wrekt")
+            else:
+                print("There are no lands available to buy!")
+            g = ""
+            tried_before = 0
+            while not g.isdigit() or int(g) not in range(1, 8):
+                if tried_before > 0:
+                    print("\nInvalid Input. Try Again!\n")
+                print(building_phase_quote)
+                g = input("Answer me with a number please:")
+                tried_before += 1
+            g = int(g)
+
+    check_player_status(game)
 
     print("The building phase is over, now lets move to the main phase\n\n==========\n\n")
     main_phase(game, turn_player, 1)
@@ -451,7 +505,7 @@ def main_phase(game, turn_player, phase_number):
           "main phase, what would you like to do?\n\n")
     g = ""
     tried_before = 0
-    while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+    while not g.isdigit() or int(g) not in range(1, 8):
         if tried_before > 0:
             print("\nInvalid Input. Try Again!\n")
         if phase_number == 1:
@@ -478,7 +532,7 @@ def main_phase(game, turn_player, phase_number):
             game.print_game_state()
             g = ""
             tried_before = 0
-            while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+            while not g.isdigit() or int(g) not in range(1, 8):
                 if tried_before > 0:
                     print("\nInvalid Input. Try Again!\n")
                 if phase_number == 1:
@@ -496,7 +550,7 @@ def main_phase(game, turn_player, phase_number):
             turn_player.print_spells_neatly()
             g = ""
             tried_before = 0
-            while bool(g.isdigit()) == 0 or int(g) not in range(1, 7):
+            while not g.isdigit() or int(g) not in range(1, 8):
                 if tried_before > 0:
                     print("\nInvalid Input. Try Again!\n")
                 if phase_number == 1:
@@ -506,6 +560,8 @@ def main_phase(game, turn_player, phase_number):
                 g = input("Answer me with a number please:")
                 tried_before += 1
             g = int(g)
+
+    check_player_status(game)
 
     if phase_number == 1:
         print("The main phase is over, now lets move to the battle phase\n\n==========\n\n")
@@ -530,7 +586,7 @@ def battle_phase(game, turn_player):
           " has entered the battle phase, what would you like to do?\n\n")
     g = ""
     tried_before = 0
-    while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
+    while not g.isdigit() or int(g) not in range(1, 6):
         if tried_before > 0:
             print("\nInvalid Input. Try Again!\n")
         print(battle_phase_quote)
@@ -547,7 +603,7 @@ def battle_phase(game, turn_player):
             game.print_monster_stats()
             g = ""
             tried_before = 0
-            while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
+            while not g.isdigit() or int(g) not in range(1, 6):
                 if tried_before > 0:
                     print("\nInvalid Input. Try Again!\n")
                 print(battle_phase_quote)
@@ -561,7 +617,7 @@ def battle_phase(game, turn_player):
             game.print_game_state()
             g = ""
             tried_before = 0
-            while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
+            while not g.isdigit() or int(g) not in range(1, 6):
                 if tried_before > 0:
                     print("\nInvalid Input. Try Again!\n")
                 print(battle_phase_quote)
@@ -576,7 +632,7 @@ def battle_phase(game, turn_player):
             turn_player.print_spells_neatly()
             g = ""
             tried_before = 0
-            while bool(g.isdigit()) == 0 or int(g) not in range(1, 6):
+            while not g.isdigit() or int(g) not in range(1, 6):
                 if tried_before > 0:
                     print("\nInvalid Input. Try Again!\n")
                 print(battle_phase_quote)
@@ -584,5 +640,39 @@ def battle_phase(game, turn_player):
                 tried_before += 1
             g = int(g)
 
+    check_player_status(game)
     print("The battle phase is over, now lets move to the second main phase\n\n==========\n\n")
     main_phase(game, turn_player, 2)
+
+
+def check_player_status(game):
+    pist = game.return_players().return_deck()
+
+    for player in game.return_players().return_deck():
+        empty_lands = 0
+        for land in player.lands():
+            if land.check_if_empty():
+                empty_lands += 1
+        if empty_lands == len(player.lands()):
+            print(player.name() + " has been eliminated! Join the losers :P ")
+            for j in player.lands():
+                game.return_unowned_lands().put_card_on_bottom(j)
+            for k in player.graveyard():
+                if k.card_class() == "Basic Creature":
+                    game.return_basic_creatures().put_card_on_bottom(k)
+
+                if k.card_class() == "Normal Creature":
+                    game.return_normal_creatures().put_card_on_bottom(k)
+
+                if k.card_class() == "Elite Creature":
+                    game.return_elite_creatures().put_card_on_bottom(k)
+            game.return_losers().put_card_on_bottom(game.return_players().return_deck().index(player))
+            game.return_players().take_card_out(game.return_players().return_deck().index(player))
+    if game.return_players().return_count() == 1:
+        print(pist[0].name() + " has won the game!! Congratulations!")
+        break
+    if game.return_players().return_count() == 0:
+        print("The game has ended... In a tie??? woah that's weird")
+        break
+
+

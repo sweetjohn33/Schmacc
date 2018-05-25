@@ -139,6 +139,8 @@ class Schmacc:
                                 ], "spell")
         self._Players = Deck([], "player")
         self._Turn_counter = 0
+        self._Losers = Deck([], "player")
+        self._Unowned_lands = Deck([], "land")
 
     def return_number_of_players(self):
         return self._number_of_Players
@@ -154,6 +156,12 @@ class Schmacc:
 
     def return_players(self):
         return self._Players
+
+    def return_losers(self):
+        return self._Losers
+
+    def return_unowned_lands(self):
+        return self._Unowned_lands
 
     def return_buildings(self):
         return self._Buildings
@@ -192,10 +200,6 @@ class Schmacc:
             for a in i.lands():
                 a.print_monsters_in_depth()
 
-
-
-
-
     def check_slots(self, player, card):
         """
 
@@ -225,5 +229,18 @@ class Schmacc:
             else:
                 return True
 
+    def check_land_avail(self):
+        player_with_land_for_sale = 0
+        for player in self._Players.return_deck():
+            available_lands = 0
+            for land in player.lands():
+                if land.check_if_empty():
+                    available_lands += 1
+            if available_lands == 0:
+                player_with_land_for_sale += 1
+        if self._Unowned_lands.return_count() == 0 and player_with_land_for_sale == self._Players.return_count():
+            return False
+        else:
+            return True
 
 

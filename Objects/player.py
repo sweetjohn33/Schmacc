@@ -77,6 +77,9 @@ class Player:
     def add_land(self, land):
         self._lands.append(land)
 
+    def del_land(self, index):
+        del self._lands[index]
+
     def buildings(self) -> list:
         return self._buildings
 
@@ -263,10 +266,10 @@ class Player:
         creature.set_owner(self)
         placement = ""
         tried_before = 0
-        while bool(placement.isdigit()) == 0 or int(placement) - 1 not in range(len(self._lands)) or\
+        while not placement.isdigit() or int(placement) - 1 not in range(len(self._lands)) or\
                 self._lands[int(placement) - 1].length_monster_list() > 0:
             if tried_before > 0:
-                if bool(placement.isdigit()) == 0:
+                if not placement.isdigit():
                     print("Invalid input (not an integer). Try again")
                 elif int(placement) - 1 not in range(len(self._lands)):
                     print("\nInvalid input (wrong number bitch) Try again\n")
@@ -293,10 +296,10 @@ class Player:
         building.set_owner(self)
         placement = ""
         tried_before = 0
-        while bool(placement.isdigit()) == 0 or int(placement) - 1 not in range(len(self._lands)) or\
+        while not placement.isdigit() or int(placement) - 1 not in range(len(self._lands)) or\
                 len(self._lands[int(placement) - 1].building_slots()) > 1:
             if tried_before > 0:
-                if bool(placement.isdigit()) == 0:
+                if not placement.isdigit():
                     print("Invalid input (not an integer). Try again")
                 elif int(placement) - 1 not in range(len(self._lands)):
                     print("\nInvalid input (wrong number bitch) Try again\n")
@@ -324,10 +327,10 @@ class Player:
         building.set_owner(self)
         placement = ""
         tried_before = 0
-        while bool(placement.isdigit()) == 0 or int(placement) - 1 not in range(len(self._lands)) or \
+        while not placement.isdigit() or int(placement) - 1 not in range(len(self._lands)) or \
                 len(self._lands[int(placement) - 1].building_slots()) > 0:
             if tried_before > 0:
-                if bool(placement.isdigit()) == 0:
+                if not placement.isdigit():
                     print("\nInvalid input (not an integer). Try again\n")
                 elif int(placement) - 1 not in range(len(self._lands)):
                     print("\nInvalid input (wrong number bitch) Try again\n")
@@ -411,7 +414,7 @@ class Player:
                 if deck.return_object_type() == "creature":
                     choice = ""
                     tried_before = 0
-                    while bool(choice.isdigit()) == 0 or int(choice) - 1 not in range(len(pist)):
+                    while not choice.isdigit() or int(choice) - 1 not in range(len(pist)):
                         if tried_before > 0:
                             print("\nInvalid Input. Try Again\n")
                         for i in range(len(pist)):
@@ -427,7 +430,7 @@ class Player:
                 if deck.return_object_type() == "building":
                     choice = ""
                     tried_before = 0
-                    while bool(choice.isdigit()) == 0 or int(choice) - 1 not in range(len(pist)):
+                    while not choice.isdigit() or int(choice) - 1 not in range(len(pist)):
                         if tried_before > 0:
                             print("\nInvalid Input. Try Again\n")
                         for i in range(len(pist)):
@@ -457,7 +460,7 @@ class Player:
     def declare_attack(self, deck):
         monster = ""
         tried_before = 0
-        while bool(monster.isdigit()) == 0 or self._lands[int(monster) - 1].length_monster_list == 0 or \
+        while not monster.isdigit() or self._lands[int(monster) - 1].length_monster_list == 0 or \
                 int(monster) - 1 not in range(len(self._lands)):
             if tried_before > 0:
                 if self._lands[int(monster) - 1].length_monster_list() == 0:
@@ -480,7 +483,7 @@ class Player:
         choice = ""
         tried_before = 0
         same_player = 0
-        while bool(choice.isdigit()) == 0 or int(choice) - 1 not in range(deck.return_count()) or same_player == 1:
+        while not choice.isdigit() or int(choice) - 1 not in range(deck.return_count()) or same_player == 1:
             if tried_before > 0:
                 if same_player > 0:
                     print("\nThat's you silly, you cant attack yourself! Try Again\n")
@@ -500,7 +503,7 @@ class Player:
 
         monster2 = ""
         tried_before = 0
-        while bool(monster2.isdigit()) == 0 or choice.lands()[int(monster2) - 1].length_monster_list == 0 or \
+        while not monster2.isdigit() or choice.lands()[int(monster2) - 1].length_monster_list == 0 or \
                 int(monster2) - 1 not in range(len(choice.lands())):
             if tried_before > 0:
                 if self._lands[int(monster) - 1].length_monster_list() == 0:
@@ -521,3 +524,72 @@ class Player:
             tried_before += 1
         monster2 = choice.lands()[int(monster2) - 1].monster_slot()
         monster.combat(monster2)
+
+    def buy_land(self, game):
+        print("\n\nLands for sale:")
+        print("\nUnowned Lands\n")
+        for land in game.return_unowned_lands().return_deck():
+            print(land.contents())
+        for player in game.return_players().return_deck():
+            print(player.name() + "'s lands up for grabs: \n")
+            for land in player.lands():
+                if land.check_if_empty():
+                    print(land.contents())
+        sector = ""
+        tried_before = 0
+        while not sector.isdigit() or int(sector) - 1 not in range(0, game.return_players().return_count() + 1) \
+                or int(sector) != 1000 or game.return_players().return_deck()[int(sector) - 2].name() == self._name:
+            if tried_before > 0:
+                if not sector.isdigit() or int(sector) - 1 not in range(0, game.return_players().return_count() + 1) \
+                        or int(sector) != 1000:
+                    print("Invalid Input. Try Again")
+                else:
+                    print("You can't buy land from yourself silly! Try again")
+            print ("\n1) the Unowned Lands Pile")
+            for i in range(game.return_players().return_count()):
+                print(str(i + 2) + ") " + game.return_players().return_deck()[i].name())
+            print("1000) Never mind")
+            sector = input("\nWhere do you want to buy from?\n")
+            tried_before += 1
+        sector = int(sector)
+        if sector == 1:
+            land = ""
+            tried_before = 0
+            while not land.isdigit() or int(land) - 1 not in range(game.return_unowned_lands().return_count()):
+                if tried_before > 0:
+                    print("Invalid input. Try Again")
+                for i in range(game.return_unowned_lands().return_count()):
+                    print(str(i + 1) + ") " + game.return_unowned_lands().return_deck()[i].contents())
+                land = input("What land would you like to purchase?")
+                tried_before += 1
+            land = int(land) - 1
+            self.add_land(game.return_unowned_lands().return_lands()[land])
+            game.return_unowned_lands().take_card_out(land)
+            print(self.name() + " has acquired a new land!")
+
+        elif sector != 1000:
+            sector = sector - 2
+            player = game.return_players().return_deck()[sector]
+            land = ""
+            tried_before = 0
+            while not land.isdigit() or int(land) - 1 not in range(len(player.lands())):
+                if tried_before > 0:
+                    print("Invalid input. Try Again")
+                for i in range(len(player.lands())):
+                    print(str(i + 1) + ") " + player.lands()[i].contents())
+                land = input("What land would you like to purchase?")
+                tried_before += 1
+            land = int(land) - 1
+            if player.lands()[land].owner() == player.name():
+                print("You own That land already silly! Try again")
+            else:
+                self.add_land(player.lands()[land])
+                player.del_land(land)
+                print(self.name() + " has acquired a new land!")
+                self.subtract_rabbits(2)
+        else:
+            pass
+
+
+
+

@@ -5,13 +5,13 @@ from Game_Function.Phases import main_phase
 from Game_Function.Phases import battle_phase
 import sys
 # welcome
+import os
 
 
 if __name__ == "__main__":
 
     # print('Number of arguments:', len(sys.argv), 'arguments.')
     # print('Argument List:', str(sys.argv))
-
     print("Welcome to Schmacc! Let's get this shit set up!")
     number_of_players = ""
     tried = 0
@@ -23,4 +23,4 @@ if __name__ == "__main__":
 
     game1 = Schmacc(number_of_players)
     start_game(game1)
-    game.game_sequence()
+    game1.game_sequence()
