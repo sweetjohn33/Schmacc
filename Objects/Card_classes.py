@@ -63,12 +63,27 @@ class PermanentCard:
     def current_attack(self):
         return self._Current_attack
 
+    def check_land_compatibility(self, land):
+        if land.name() == self._good_terrain:
+            print(self._name + " is enjoying the " + land.name() + "! :)\n")
+            self._Current_health += 1
+            self._Current_attack += 1
+            self._Current_defense += 1
+
+        if land.name() == self._bad_terrain:
+            print(self._name + " doesn't like the " + land.name() + " :(\n")
+            self._Current_health -= 1
+            self._Current_attack -= 1
+            self._Current_defense -= 1
+            if self._Current_health == 0:
+                self.owner().send_to_graveyard(self)
+
     def return_to_original(self):
         self._Current_health = self._Original_health
         self._Current_defense = self._Original_defense
         self._Current_attack = self._Original_attack
 
-    def combat(self, perm2):
+    def combat(self, perm2, game):
         attack = self.current_attack() + randint(1, 12)
         defense = perm2.current_defense() + randint(1, 12)
         health_lost = attack - defense
@@ -78,7 +93,20 @@ class PermanentCard:
             perm2.lose_health(1)
         if perm2.current_health() <= 0:
             print(perm2.name() + " Has been destroyed!")
-            perm2.owner().send_to_graveyard(perm2)
+            if perm2.card_class() == "Building":
+                game.return_buildings().put_card_on_bottom(perm2)
+                game.return_buildings().return_deck()[-1].return_to_original()
+                found_already = 0
+                while found_already == 0:
+                    for building in perm2.owner().building_slots():
+                        if building.name() == perm2.name() and building.current_health() == perm2.current_health():
+                            building_index = perm2.owner().building_slots().index(building)
+                            perm2.owner().lose_buildings(building_index)
+                            found_already += 1
+
+
+            else:
+                perm2.owner().send_to_graveyard(perm2)
         else:
             print(perm2.name() + "'s health is now " + str(perm2.current_health()))
 

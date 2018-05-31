@@ -13,7 +13,7 @@ from random import randint
 #     game.return_players().shuffle_deck()
 # 
 #     unassigned_lands = Deck([Land("Forest"), Land("Forest"), Land("Meadow"), Land("Meadow"), Land("Mountain"),
-#                              Land("Mountain"), Land("Snow"), Land("Snow"), Land("Marsh"), Land("Marsh"), Land("Desert"),
+#                            Land("Mountain"), Land("Snow"), Land("Snow"), Land("Marsh"), Land("Marsh"), Land("Desert"),
 #                              Land("Desert")], "land")
 # 
 #     while unassigned_lands.return_count() != 0:
@@ -139,14 +139,15 @@ def building_phase(game, turn_player):
     game.return_spells().take_card_off_top()
 
     food_bonus = 0
-    for land in turn_player.lands():
-        for building in land.building_slots():
-            if building.name() == "Farm":
-                food_bonus += 1
-    if food_bonus > 0:
-        turn_player.add_food(food_bonus)
-        print(turn_player.name() + " received " + str(food_bonus) + " food this turn")
-        print(turn_player.name() + " now has " + str(turn_player.food()) + " food\n")
+    for player in game.return_players().return_deck():
+        for land in player.lands():
+            for building in land.building_slots():
+                if building.name() == "Farm":
+                    food_bonus += 1
+        if food_bonus > 0:
+            player.add_food(food_bonus)
+            print(player.name() + " received " + str(food_bonus) + " food this turn")
+            print(player.name() + " now has " + str(player.food()) + " food\n")
 
     # Now that the player has received their goodies for the turn, they can decide if they want to buy,
     # sell, or tribute anything
@@ -488,9 +489,9 @@ def building_phase(game, turn_player):
             g = int(g)
 
     check_player_status(game)
-
-    print("The building phase is over, now lets move to the main phase\n\n==========\n\n")
-    main_phase(game, turn_player, 1)
+    if game.return_players().return_count() > 1:
+        print("The building phase is over, now lets move to the main phase\n\n==========\n\n")
+        main_phase(game, turn_player, 1)
 
 
 def main_phase(game, turn_player, phase_number):
@@ -562,18 +563,18 @@ def main_phase(game, turn_player, phase_number):
             g = int(g)
 
     check_player_status(game)
+    if game.return_players().return_count() > 1:
+        if phase_number == 1:
+            print("The main phase is over, now lets move to the battle phase\n\n==========\n\n")
+            battle_phase(game, turn_player)
 
-    if phase_number == 1:
-        print("The main phase is over, now lets move to the battle phase\n\n==========\n\n")
-        battle_phase(game, turn_player)
-
-    if phase_number == 2:
-        print("The second main phase is over, and with it ends your turn and your agency over the board situation"
-              "I bid thee adieu")
-        game.advance_turn_counter()
-        turn_player = game.return_players().return_deck()[game.return_turn_counter() %
-                                                          game.return_players().return_count()]
-        building_phase(game, turn_player)
+        if phase_number == 2:
+            print("The second main phase is over, and with it ends your turn and your agency over the board situation"
+                  "I bid thee adieu")
+            game.advance_turn_counter()
+            turn_player = game.return_players().return_deck()[game.return_turn_counter() %
+                                                              game.return_players().return_count()]
+            building_phase(game, turn_player)
 
 
 def battle_phase(game, turn_player):
@@ -595,7 +596,7 @@ def battle_phase(game, turn_player):
     g = int(g)
     while g != 5:
         if g == 1:
-            turn_player.declare_attack(game.return_players())
+            turn_player.declare_attack(game.return_players(), game)
             print("The battle phase is over, now lets move to the second main phase\n\n==========\n\n")
             main_phase(game, turn_player, 2)
 
@@ -641,8 +642,9 @@ def battle_phase(game, turn_player):
             g = int(g)
 
     check_player_status(game)
-    print("The battle phase is over, now lets move to the second main phase\n\n==========\n\n")
-    main_phase(game, turn_player, 2)
+    if game.return_players().return_count() > 1:
+        print("The battle phase is over, now lets move to the second main phase\n\n==========\n\n")
+        main_phase(game, turn_player, 2)
 
 
 def check_player_status(game):
@@ -670,9 +672,7 @@ def check_player_status(game):
             game.return_players().take_card_out(game.return_players().return_deck().index(player))
     if game.return_players().return_count() == 1:
         print(pist[0].name() + " has won the game!! Congratulations!")
-        break
-    if game.return_players().return_count() == 0:
+    elif game.return_players().return_count() == 0:
         print("The game has ended... In a tie??? woah that's weird")
-        break
 
 

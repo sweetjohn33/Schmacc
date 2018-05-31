@@ -80,11 +80,21 @@ class Player:
     def del_land(self, index):
         del self._lands[index]
 
+    def has_no_empty_lands(self):
+        empty_count = 0
+        for land in self._lands:
+            if land.check_if_empty():
+                empty_count += 1
+        if empty_count == 0:
+            return True
+        else:
+            return False
+
     def buildings(self) -> list:
         return self._buildings
 
-    def lose_buildings(self, i):
-        del self._buildings[i]
+    def lose_buildings(self, index):
+        del self._buildings[index]
 
     def add_building(self, building):
         self._buildings.append(building)
@@ -457,7 +467,7 @@ class Player:
         # they want and the function searches for a card with a matching name in the spell deck and adds it to the
         # player's hand.
 
-    def declare_attack(self, deck):
+    def declare_attack(self, deck, game):
         monster = ""
         tried_before = 0
         while not monster.isdigit() or self._lands[int(monster) - 1].length_monster_list == 0 or \
@@ -503,8 +513,9 @@ class Player:
 
         monster2 = ""
         tried_before = 0
-        while not monster2.isdigit() or choice.lands()[int(monster2) - 1].length_monster_list == 0 or \
-                int(monster2) - 1 not in range(len(choice.lands())):
+        while not monster2.isdigit() or choice.lands()[int(monster2) - 1].length_monster_list == 0 and \
+                len(choice.lands()[int(monster2) - 1].building_slots()) == 0 or int(monster2) - 1 \
+                not in range(len(choice.lands())):
             if tried_before > 0:
                 if self._lands[int(monster) - 1].length_monster_list() == 0:
                     print("\nThat land don't got no monsters to attack yo, Try again\n")
@@ -513,7 +524,16 @@ class Player:
             print(choice.name() + "'s monsters:")
             for i in range(len(choice.lands())):
                 if choice.lands()[i].length_monster_list() == 0:
-                    print(str(i + 1) + ")" + choice.lands()[i].name() + ": empty\n")
+                    if len(choice.lands()[i].building_slots()) == 0:
+                        print(str(i + 1) + ")" + choice.lands()[i].name() + ": empty\n")
+                    else:
+                        for building in choice.lands()[i].building_slots():
+                            print(str(choice.lands()[i].building_slots().index(building) + 1) + ")" +
+                                  choice.lands()[i].name() + ": " + building.name() +
+                                  "(Current health " + str(building.current_health()) +
+                                  "/" + str(building.original_health()) + " || Current Defense: " +
+                                  str(building.current_defense()) +
+                                  "/" + str(building.original_defense()) + ")\n")
                 else:
                     print(str(i + 1) + ")" + choice.lands()[i].name() + ": " + choice.lands()[i].monster_slot().name() +
                           "(Current health " + str(choice.lands()[i].monster_slot().current_health()) +
@@ -522,29 +542,47 @@ class Player:
                           "/" + str(choice.lands()[i].monster_slot().original_defense()) + ")\n")
             monster2 = input("\nWhat monster do you wanna attack??\n")
             tried_before += 1
-        monster2 = choice.lands()[int(monster2) - 1].monster_slot()
-        monster.combat(monster2)
+        monster2 = int(monster2) - 1
+        if choice.lands()[monster2].length_monster_list() > 0:
+            attack_target = choice.lands()[monster2].monster_slot()
+        elif len(choice.lands()[monster2].building_slots()) > 0:
+            tried_before = 0
+            building = ""
+            while not building.isdigit() or int(building) - 1 not in \
+                    range(len(choice.lands()[monster2].building_slots())):
+                if tried_before > 0:
+                    print("Invalid Input. Try Again.\n")
+                for build in choice.lands()[int(monster2)].building_slots():
+                    print(str(choice.lands()[monster2].building_slots().index(build) + 1)
+                          + ") " + choice.lands()[monster2].name() + ": " + build.name() +
+                          "(Current health " + str(build.current_health()) +
+                          "/" + str(build.original_health()) + " || Current Defense: " +
+                          str(build.current_defense()) +
+                          "/" + str(build.original_defense()) + ")\n")
+                building = input("Which building would you like to attack?")
+            attack_target = choice.lands()[monster2].building_slots()[int(building) - 1]
+        monster.combat(attack_target, game)
 
     def buy_land(self, game):
         print("\n\nLands for sale:")
-        print("\nUnowned Lands\n")
-        for land in game.return_unowned_lands().return_deck():
-            print(land.contents())
+        print("\nUnowned Lands:\n")
+        if game.return_unowned_lands().return_count() == 0:
+            print("none\n")
+        else:
+            for land in game.return_unowned_lands().return_deck():
+                print(land.contents())
         for player in game.return_players().return_deck():
-            print(player.name() + "'s lands up for grabs: \n")
+            print(player.name() + "'s lands up for grabs:")
             for land in player.lands():
                 if land.check_if_empty():
-                    print(land.contents())
+                    print(land.name())
+            print("\n")
         sector = ""
         tried_before = 0
         while not sector.isdigit() or int(sector) - 1 not in range(0, game.return_players().return_count() + 1) \
-                or int(sector) != 1000 or game.return_players().return_deck()[int(sector) - 2].name() == self._name:
+                and int(sector) != 1000:
             if tried_before > 0:
-                if not sector.isdigit() or int(sector) - 1 not in range(0, game.return_players().return_count() + 1) \
-                        or int(sector) != 1000:
-                    print("Invalid Input. Try Again")
-                else:
-                    print("You can't buy land from yourself silly! Try again")
+                print("Invalid Input. Try Again")
             print ("\n1) the Unowned Lands Pile")
             for i in range(game.return_players().return_count()):
                 print(str(i + 2) + ") " + game.return_players().return_deck()[i].name())
@@ -552,14 +590,20 @@ class Player:
             sector = input("\nWhere do you want to buy from?\n")
             tried_before += 1
         sector = int(sector)
-        if sector == 1:
+        if game.return_players().return_deck()[sector - 2].name() == self._name:
+            print("You can't buy land from yourself silly! Try again")
+            pass
+        elif game.return_players().return_deck()[sector - 2].has_no_empty_lands():
+            print("That sector has no no free lands to buy. Try again")
+            pass
+        elif sector == 1:
             land = ""
             tried_before = 0
             while not land.isdigit() or int(land) - 1 not in range(game.return_unowned_lands().return_count()):
                 if tried_before > 0:
                     print("Invalid input. Try Again")
                 for i in range(game.return_unowned_lands().return_count()):
-                    print(str(i + 1) + ") " + game.return_unowned_lands().return_deck()[i].contents())
+                    print(str(i + 1) + ") " + game.return_unowned_lands().return_deck()[i].name())
                 land = input("What land would you like to purchase?")
                 tried_before += 1
             land = int(land) - 1
@@ -572,15 +616,19 @@ class Player:
             player = game.return_players().return_deck()[sector]
             land = ""
             tried_before = 0
-            while not land.isdigit() or int(land) - 1 not in range(len(player.lands())):
+            while not land.isdigit() or int(land) - 1 not in range(len(player.lands())) or not \
+                    player.lands()[int(land) - 1].check_if_empty():
                 if tried_before > 0:
                     print("Invalid input. Try Again")
                 for i in range(len(player.lands())):
-                    print(str(i + 1) + ") " + player.lands()[i].contents())
+                    if player.lands()[i].check_if_empty():
+                        print(str(i + 1) + ") " + player.lands()[i].name() + ": empty")
+                    else:
+                        print(str(i + 1) + ") " + player.lands()[i].name() + ": This land is not for sale")
                 land = input("What land would you like to purchase?")
                 tried_before += 1
             land = int(land) - 1
-            if player.lands()[land].owner() == player.name():
+            if player.lands()[land].owner() == self.name():
                 print("You own That land already silly! Try again")
             else:
                 self.add_land(player.lands()[land])
