@@ -110,6 +110,7 @@ class Player:
 
     def send_to_graveyard(self, monster):
         self._graveyard.append(monster)
+        monster.land_switch(None)
 
     # All of these functions are pretty self-explanatory, they do whatever their name says
     
@@ -499,9 +500,10 @@ class Player:
                     print("\nThat's you silly, you cant attack yourself! Try Again\n")
                 else:
                     print("\nInvalid Input. Try Again\n")
+            not_attackable = ""
             for i in range(deck.return_count()):
                 if pist[i].player_ID() == self._player_ID:
-                    print(str(i + 1) + ")" + pist[i].name() + " That's you silly, you cant attack yourself!")
+                    print(str(i + 1) + ")" + pist[i].name() + "    That's you silly, you cant attack yourself!")
                     not_attackable = str(i + 1)
                 else:
                     print(str(i + 1) + ")" + pist[i].name())

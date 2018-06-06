@@ -1,9 +1,10 @@
 # A module to hold the phases of the game
 
 from Objects.Deck import Deck
-from Objects.Land import Land
+from Objects.Constants import *
 from Objects.player import Player
 from random import randint
+
 
 # def start_game_random(game):
 #     
@@ -49,9 +50,9 @@ def start_game(game):
     print("\n=========\nHere is the order the spell cards should be in:\n")
     print(game.return_spells())
     print("\n=========\n")
-    unassigned_lands = Deck([Land("Forest"), Land("Forest"), Land("Meadow"), Land("Meadow"), Land("Mountain"),
-                             Land("Mountain"), Land("Snow"), Land("Snow"), Land("Marsh"), Land("Marsh"), Land("Desert"),
-                             Land("Desert")], "land")
+    unassigned_lands = Deck([FOREST1, FOREST2, MEADOW1, MEADOW2, MOUNTAIN1,
+                             MOUNTAIN2, SNOW1, SNOW2, MARSH1, MARSH2, DESERT1,
+                             DESERT2], "land")
 
     # The players are prompted for their names and the game creates a player with each name given,
     # adding it to the list of players
@@ -126,7 +127,10 @@ def building_phase(game, turn_player):
     # This function runs the player through their buildings phase. It starts off by giving the player their
     # neutered rabbits, food, and magic card for the turn. Then it presents the player with several options: to buy
     # something, sell something, tribute something, check the game state, or move onto their own turn.
-    print("=======\n")
+    print("============\n")
+    game.decrement_weather()
+    print("============\n")
+
     print("It is " + turn_player.name()
           + "'s Turn, turn " + str(game.return_turn_counter() + 1) + "\n")
 
@@ -286,6 +290,7 @@ def building_phase(game, turn_player):
                             else:
                                 turn_player.add_rabbits(5)
                             land.building_slots()[building_sold].return_to_original()
+                            land.building_slots()[building_sold].land_switch(None)
                             game.return_buildings().put_card_on_bottom(land.building_slots()[building_sold])
                             del land.building_slots()[building_sold]
                     else:

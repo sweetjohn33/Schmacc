@@ -8,6 +8,7 @@ from Objects.Card_classes import Building
 from Objects.Card_classes import Spell
 from Objects.Land import Land
 from random import sample
+from Objects.Constants import *
 
 
 class Schmacc:
@@ -141,6 +142,9 @@ class Schmacc:
         self._Turn_counter = 0
         self._Losers = Deck([], "player")
         self._Unowned_lands = Deck([], "land")
+        self._Weather = CLEAR
+        self._Previous_weather = CLEAR
+        self._Weather_count = 0
 
     def return_number_of_players(self):
         return self._number_of_Players
@@ -202,7 +206,6 @@ class Schmacc:
 
     def check_slots(self, player, card):
         """
-
         :param player: the player checked
         :param card: the type of card checked
         """
@@ -243,4 +246,29 @@ class Schmacc:
         else:
             return True
 
+    def decrement_weather(self):
+        self._Weather_count -= 1
+        if self._Weather_count == 0:
+            self.change_weather(CLEAR)
+
+    def change_weather(self, weather):
+        self._Previous_weather = self._Weather
+        self._Weather = weather
+        self._Weather_count = 3
+        for player in self._Players.return_deck():
+            for land in player.lands():
+                for monster in land.monster_slot():
+                    if self._Previous_weather.other_thing() == monster.good_land() or land.name() == \
+                            self._Previous_weather.other_thing():
+                        monster.total_boost(-1)
+                    if self._Weather.other_thing() == monster.good_land() or land.name() == self._Weather.other_thing():
+                        monster.total_boost(1)
+                        print(monster.owner().name() + "'s " + monster.name() + " is enjoying the weather!")
+                if land.name() == self._Previous_weather.other_thing():
+                    for building in land.building_slots():
+                        building.total_boost(-1)
+                if land.name() == self._Weather.other_thing():
+                    for building in land.building_slots():
+                        building.total_boost(1)
+        print("A MASSIVE " + weather + " has surrounded the battlefield!")
 

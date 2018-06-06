@@ -31,7 +31,7 @@ class Land:
 
     def add_monster(self, monster):
         self._contents[0].append(monster)
-        monster.check_land_compatibility(self)
+        monster.land_switch(self)
 
     def delete_monster(self):
         del self._contents[0][0]
