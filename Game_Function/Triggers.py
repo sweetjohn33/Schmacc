@@ -13,6 +13,8 @@ class Trigger(Enum):
     AfterDef = 5
     OnStandby = 6
     OnCardAct = 7
-    Contin = 8
+    Continuous = 8
+    assistfromgrave = 9
+
 
 

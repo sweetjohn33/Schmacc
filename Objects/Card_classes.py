@@ -1,7 +1,7 @@
 # A module to hold the different types of cards
 
 from random import randint
-from Objects.Triggers import Trigger
+from Game_Function.Triggers import Trigger
 
 
 class PermanentCard:
@@ -10,15 +10,19 @@ class PermanentCard:
     # relevant to the game. We will keep track of their stats through "current" stats which will be modified as needed,
     # and "original" stats which will never change
 
-    def __init__(self, name, health, defense, attack=0, good_terrain="", bad_terrain="", trigger=0, effect=""):
+    def __init__(self, name, effect, health, defense, attack=0, good_terrain="", bad_terrain="", 
+                 targets=""):
         """
 
-        :param name: name of card
-        :param health: original health of card
-        :param defense: original defense
-        :param attack: original attack
-        :param good_terrain: card's preferred terrain
-        :param bad_terrain: card's least preferred terrain
+        :param name:
+        :param health:
+        :param defense:
+        :param attack:
+        :param good_terrain:
+        :param bad_terrain:
+        :param trigger:
+        :param effect:
+        :param targets: a list of the following format: [object type, zone, players, number]
         """
         self._name = name
         self._Original_health = health
@@ -32,8 +36,8 @@ class PermanentCard:
         self._owner = None
         self._land = None
         self._previous_land = None
-        self._trigger = Trigger(trigger)
         self._effect = effect
+
 
     def name(self) -> str:
         return self._name
@@ -58,7 +62,7 @@ class PermanentCard:
 
     def lose_health(self, health):
         self._Current_health -= health
-        print(self.name() + " has lost " + str(health) + " health!")
+        print("\n" + self.name() + " has lost " + str(health) + " health!\n")
 
     def original_defense(self):
         return self._Original_defense
@@ -72,8 +76,15 @@ class PermanentCard:
     def current_attack(self):
         return self._Current_attack
 
-    def return_trig(self):
-        return self._Trigger
+    def return_effect(self):
+        return self._effect
+
+    def trigger_check(self, number):
+        check = Trigger(number)
+        for trigger in self._trigger:
+            if trigger == check:
+                return True
+        return False
 
     def total_boost(self, boost):
         self._Current_health += boost
@@ -118,8 +129,12 @@ class PermanentCard:
             self.return_to_original()
             self._owner.send_to_graveyard(self)
             self._land.delete_monster()
-        attack = self.current_attack() + randint(1, 12)
-        defense = perm2.current_defense() + randint(1, 12)
+        attack_roll = randint(1, 12)
+        defense_roll = randint(1, 12)
+        print(self._name + " Has rolled a " + str(attack_roll) + "!\n")
+        print(perm2.name() + " Has rolled a " + str(defense_roll) + "!\n")
+        attack = self.current_attack() + attack_roll
+        defense = perm2.current_defense() + defense_roll
         health_lost = attack - defense
         if health_lost >= 1:
             perm2.lose_health(health_lost)
@@ -141,7 +156,7 @@ class PermanentCard:
             else:
                 perm2.return_to_original()
                 perm2.owner().send_to_graveyard(perm2)
-                perm2.land().delete_monster()
+                perm2.previous_land().delete_monster()
             buildings = perm2.previous_land().building_slots()
             if len(buildings) > 0:
                 new_target = ""
@@ -152,9 +167,9 @@ class PermanentCard:
                         print("Invalid Input, try again.")
                     print(self.name() + " is on a rampage! What else would you like to attack?")
                     for building in buildings:
-                        print(str(buildings.index(building) + 1) + ") " + building + ": Health: " +
-                              str(building.current_health()) + "|||  Defense: " + str(building.current_defense()))
-                    new_target = input("What is your next victim?")
+                        print(str(buildings.index(building) + 1) + ") " + building.name() + ": Health: " +
+                              str(building.current_health()) + "  |||  Defense: " + str(building.current_defense()))
+                    new_target = input("What is your next victim?\n")
                 new_target = int(new_target) - 1
                 self.combat(buildings[new_target], game)
             elif perm2.previous_land().monster_slot().name() == "DJ Meow Mix":
@@ -164,13 +179,65 @@ class PermanentCard:
                 print("Your " + self.name() + "has totally cleared this column out bro, good work.")
 
         else:
-            print(perm2.name() + "'s health is now " + str(perm2.current_health()))
+            print("\n" + perm2.name() + "'s health is now " + str(perm2.current_health()) + "\n")
         self.land_switch(self._previous_land)
+
+    def pick_target(self, effect, game):
+        if self.effect
+        viable_players = []
+        viable_targets = []
+        if self._target[2] == "all":
+            for player in game.return_players().return_deck():
+                viable_players.append(player)
+        if self._target[2] == "opponents":
+            for player in game.return_players().return_deck():
+                if player.name() != self._owner.name():
+                    viable_players.append(player)
+        if self._target[2] == "owner":
+            for player in game.return_players().return_deck():
+                if player.name() == self._owner.name():
+                    viable_players.append(player)
+        if self._target[0] == "creature":
+            if self._target[1] == "graveyard":
+                for player in viable_players:
+                    for monster in player.graveyard():
+                        viable_targets.append(monster)
+
+            if self._target[1] == "battlefield":
+                for player in viable_players:
+                    for land in player.lands():
+                        for monster in land.monster_slot():
+                            viable_targets.append(monster)
+
+        if self._target[0] == "building":
+            for player in viable_players:
+                for land in player.lands():
+                    for building in land.building_slots():
+                        viable_targets.append(building)
+        if self._target[0] == "player":
+            for player in viable_players:
+                viable_targets.append(player)
+        chosen_targets = []
+        for i in range(self._target[4]):
+            for g in range(len(viable_targets)):
+                print(str(g + 1) + ") " + viable_targets[g].owner().name() + ": " + viable_targets[g].name())
+            target = input("Which card would you like to target?")
+            target = int(target) - 1
+            chosen_targets.append(viable_targets[target])
+            del viable_targets[target]
+
+        effect = self._effect + str(chosen_targets) + ")"
+        return effect
+
+
+
 
 
 class BasicCreature(PermanentCard):
-    def __init__(self, name, health, defense, attack, good_terrain="", bad_terrain=""):
-        super().__init__(name, health, defense, attack, good_terrain, bad_terrain)
+    def __init__(self, name, effect, health, defense, attack, good_terrain="", bad_terrain="", 
+                 targets=""):
+        super().__init__(name, effect, health, defense, attack, good_terrain, bad_terrain, 
+                 targets)
         self._class = "Basic Creature"
 
     def card_class(self):
@@ -178,8 +245,10 @@ class BasicCreature(PermanentCard):
 
 
 class NormalCreature(PermanentCard):
-    def __init__(self, name, health, defense, attack, good_terrain="", bad_terrain=""):
-        super().__init__(name, health, defense, attack, good_terrain, bad_terrain)
+    def __init__(self, name, effect, health, defense, attack, good_terrain="", bad_terrain="", 
+                 targets=""):
+        super().__init__(name, effect, health, defense, attack, good_terrain, bad_terrain, 
+                 targets)
         self._class = "Normal Creature"
 
     def card_class(self):
@@ -187,14 +256,20 @@ class NormalCreature(PermanentCard):
 
 
 class EliteCreature(PermanentCard):
-    def __init__(self, name, health, defense, attack, good_terrain="", bad_terrain=""):
-        super().__init__(name, health, defense, attack, good_terrain, bad_terrain)
+    def __init__(self, name, effect, health, defense, attack, good_terrain="", bad_terrain="", 
+                 targets=""):
+        super().__init__(name, effect, health, defense, attack, good_terrain, bad_terrain,  
+                 targets)
         self._class = "Elite Creature"
 
+    def card_class(self):
+        return self._class
 
 class Building(PermanentCard):
-    def __init__(self, name, health, defense, attack=0, good_terrain="", bad_terrain=""):
-        super().__init__(name, health, defense, attack, good_terrain, bad_terrain)
+    def __init__(self, name, effect, health, defense, attack=0, good_terrain="", bad_terrain="", 
+                 targets=""):
+        super().__init__(name, effect, health, defense, attack, good_terrain, bad_terrain, 
+                 targets)
         self._class = "Building"
 
     def card_class(self):
@@ -208,32 +283,25 @@ class Building(PermanentCard):
         self._previous_land = self._land
         self._land = land
 
-# We have subclasses for eah type of permanent card where the only difference between the types is their "class" which
+# We have subclasses for each type of permanent card where the only difference between the types is their "class" which
 # is basically just what tier of monster it is
 
 
-class Spell:
+class Spell(PermanentCard):
     # Spells will essentially defined by their name only,they have no other attributes so far... however, eventually
     # subtypes of spell card may be added
 
-    def __init__(self, name, trigger=0, effect=""):
-        """
+    def __init__(self, name, effect, health=0, defense=0, attack=0, good_terrain="", bad_terrain="", 
+                 targets=""):
+        super().__init__(name, effect, health, defense, attack, good_terrain, bad_terrain,  
+                         targets)
+        self._class = "Spell"
 
-        :param name: name of spell
-        """
-        self._name = name
-        self._trigger = Trigger(trigger)
-        self._effect = effect
+    def card_class(self):
+        return self._class
 
-    def name(self) -> str:
-        return self._name
+    # def play_card(self, targets=None):
+    #     if targets is None:
+    #         exec(self._effect)
+    #
 
-    def __repr__(self):
-        return self._name
-
-    def __str__(self):
-        return self.__repr__()
-
-    def play_card(self, targets=None):
-        if targets is None:
-            exec(self._effect)

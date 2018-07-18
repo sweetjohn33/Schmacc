@@ -113,7 +113,7 @@ def start_game(game):
     print("\nCongratulations! you have succeeded in setting up the game without crashing it!"
           "\nNow lets see how you play\n")
 
-    turn_player = game.return_players().return_deck()[game.return_turn_counter() % game.return_players().return_count()]
+    turn_player = game.return_players().return_deck()[0]
     building_phase(game, turn_player)
 
 def building_phase(game, turn_player):
@@ -501,12 +501,12 @@ def building_phase(game, turn_player):
 
 def main_phase(game, turn_player, phase_number):
     main_phase_quote_1 = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
-                           "Activate Building effect\n3) Activate Monster effect" \
-                           "\n4) Check shit out\n5) See my spells\n6) Send me to the " \
+                           "Activate Building effect\n3) Activate Monster effect \n4) Feed a monster" \
+                           "\n5) Check shit out\n6) See my spells\n7) Send me to the " \
                            "battle phase my dude"
     main_phase_quote_2 = "\nWould you like to activate anything?\n1) Activate Spell\n2) " \
-                         "Activate Building effect\n3) Activate Monster effect" \
-                         "\n4) Check shit out\n5) See my spells\n6) End my turn my dude"
+                         "Activate Building effect\n3) Activate Monster effect \n4) Feed a monster" \
+                         "\n5) Check shit out\n6) See my spells\n7) End my turn my dude"
     print("\n\nTurn: " + str(game.return_turn_counter() + 1) + "\n" + turn_player.name() + " has entered the "
           "main phase, what would you like to do?\n\n")
     g = ""
@@ -521,7 +521,7 @@ def main_phase(game, turn_player, phase_number):
         g = input("Answer me with a number please:")
         tried_before += 1
     g = int(g)
-    while g != 6:
+    while g != 7:
         if g == 1:
             # Show the player their spells and prompt them to activate one
             pass
@@ -535,6 +535,9 @@ def main_phase(game, turn_player, phase_number):
             pass
 
         if g == 4:
+            # Let the player feed their damn animal
+            pass
+        if g == 5:
             game.print_game_state()
             g = ""
             tried_before = 0
@@ -552,7 +555,7 @@ def main_phase(game, turn_player, phase_number):
         # If the player wants to see their spells they get their spells displayed to them. then they are returned to
         # the building phase menu
 
-        if g == 5:
+        if g == 6:
             turn_player.print_spells_neatly()
             g = ""
             tried_before = 0

@@ -640,6 +640,14 @@ class Player:
         else:
             pass
 
+    def feed_creature(self):
+        tried_before = 0
+        creature_fed = ""
+        while not creature_fed.isdigit() or int(creature_fed) - 1 not in range(len(self._lands)):
+            print("You have " + str(self._food_count) + "food, who would you like to feed?")
+            for land in self._lands:
+                print(str(self._lands.index(land)) + ") " + land.name())
+
 
 
 
