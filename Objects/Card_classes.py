@@ -183,7 +183,7 @@ class PermanentCard:
         self.land_switch(self._previous_land)
 
     def pick_target(self, effect, game):
-        if self.effect
+        if effect
         viable_players = []
         viable_targets = []
         if self._target[2] == "all":
