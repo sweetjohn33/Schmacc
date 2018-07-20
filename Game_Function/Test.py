@@ -2,7 +2,8 @@ import pygame, sys
 from pygame.locals import *
 import math
 
-def drawRegularPolygon(surface, color, numSides, tiltAngle, x, y, radius):
+
+def drawregularpolygon(surface, color, numSides, tiltAngle, x, y, radius):
   pts = []
   for i in range(numSides):
     x = x + radius * math.cos(tiltAngle + math.pi * 2 * i / numSides)
@@ -22,7 +23,7 @@ DISPLAYSURF.fill(WHITE)
 # board = pygame.image.load('SchmaccPictures/Board-1.png')
 # board = pygame.transform.scale(board, (800, 800))
 # DISPLAYSURF.blit(board, (boardx, boardy))
-drawRegularPolygon(DISPLAYSURF, RED, 12, 0, 399, 399, 200)
+drawregularpolygon(DISPLAYSURF, RED, 12, 0, 399, 399, 200)
 
 
 while True: # main game loop

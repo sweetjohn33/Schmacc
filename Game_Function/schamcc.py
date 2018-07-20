@@ -35,7 +35,7 @@ class Schmacc:
                                          EliteCreature("Wasabi Ice Cream Dragon", 5, 7, 12, "Snow", "Forest"),
                                          EliteCreature("Mongoose Dragon", 8, 6, 10, "Desert", "Meadow")], "creature")
 
-        self._Normal_creatures = Deck([NormalCreature("Tortuga_Luchadora", {"add_defense(" : [5, "self", 0]}, 5, 6, 5, "Marsh", "Snow"),
+        self._Normal_creatures = Deck([NormalCreature("Tortuga_Luchadora", {"add_defense(" : [5, ["self"], 0]}, 5, 6, 5, "Marsh", "Snow"),
                                           NormalCreature("Baby Phoenix", 8, 5, 3, "Desert", "Meadow"),
                                           NormalCreature("Polar Bear Fruit Salesman", 5, 5, 6, "Snow", "Mountain"),
                                           NormalCreature("Headsman", 3, 6, 7, "Meadow", "Desert"),
@@ -145,6 +145,7 @@ class Schmacc:
         self._Weather = CLEAR
         self._Previous_weather = CLEAR
         self._Weather_count = 0
+        self._Stack = []
 
     def return_number_of_players(self):
         return self._number_of_Players
@@ -273,18 +274,21 @@ class Schmacc:
         print("A MASSIVE " + weather + " has surrounded the battlefield!")
 
     def trigger_check(self, trigger):
-        stack = []
         for player in self._Players.return_deck():
             for land in player.lands():
                 for monster in land.monster_slot():
                     for entry in monster.return_effect():
-                        if entry[1] == trigger:
-                            print("1) Yes\n2) No")
-                            answer = input("Would" + monster.owner().name() + " like to activate" + monster.name()
-                                           + "'s effect?")
-                            if answer == 1:
-                                stack.append(monster.pick_target(entry, self))
-
+                        if entry[0] == trigger:
+                            if entry[5] == "optional":
+                                print("1) Yes\n2) No")
+                                answer = input("Would" + monster.owner().name() + " like to activate" + monster.name()
+                                               + "'s effect?")
+                                if answer == 1:
+                                    self._Stack.append(monster.pick_target(entry, self))
+                            else:
+                                self._Stack.append(monster.pick_target(entry, self))
+            for spell in play.spells():
+                # check spell triggers and prompt spell activations
                 for building in land.building_slots():
                     for entry in building.return_effect():
                         if entry[1] == trigger:

@@ -7,15 +7,15 @@ class Land:
     # and the second list contains their buildings. A land should only be able to have at the most
     # one monster and two buildings at a time
 
-    def __init__(self, name, owner=""):
+    def __init__(self, name):
         """
 
         :param name: The name of the class
         """
         self._contents = [[], []]
         self._name = name
-        self._empty = False
-        self._owner = owner
+
+        self._owner = None
 
     def __repr__(self):
         return self._name

@@ -2,6 +2,7 @@
 
 from random import sample
 
+
 class Deck:
 
     def __init__(self, object_list, object_type):
