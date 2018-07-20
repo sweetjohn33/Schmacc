@@ -38,3 +38,4 @@ class Target:
         self._Place = place
         self._What_players = what_players
         self._Number_of = number_of
+        
