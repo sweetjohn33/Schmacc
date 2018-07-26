@@ -14,7 +14,6 @@ class Land:
         """
         self._contents = [[], []]
         self._name = name
-
         self._owner = None
 
     def __repr__(self):

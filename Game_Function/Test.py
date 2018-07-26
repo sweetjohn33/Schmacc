@@ -12,28 +12,35 @@ def drawregularpolygon(surface, color, numSides, tiltAngle, x, y, radius):
   pygame.draw.polygon(surface, color, pts)
 
 # It's a red stop sign
-pygame.init()
-pygame.display.set_caption('Schmacc Board')
-DISPLAYSURF = pygame.display.set_mode((800, 800))
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-DISPLAYSURF.fill(WHITE)
+# pygame.init()
+# pygame.display.set_caption('Schmacc Board')
+# DISPLAYSURF = pygame.display.set_mode((800, 800))
+# WHITE = (255, 255, 255)
+# RED = (255, 0, 0)
+# DISPLAYSURF.fill(WHITE)
 # boardx = 0
 # boardy = 0
 # board = pygame.image.load('SchmaccPictures/Board-1.png')
 # board = pygame.transform.scale(board, (800, 800))
 # DISPLAYSURF.blit(board, (boardx, boardy))
-drawregularpolygon(DISPLAYSURF, RED, 12, 0, 399, 399, 200)
+# drawregularpolygon(DISPLAYSURF, RED, 12, 0, 399, 399, 200)
+#
+#
+# while True: # main game loop
+#
+#
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             pygame.quit()
+#             sys.exit()
+#
+#     pygame.display.update()
 
+def blank_in_blank(set1, set2):
+    if set1 in set2:
+        print("congrats")
+    else:
+        print("sorry")
 
-while True: # main game loop
-
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-    pygame.display.update()
-
-
+blank_in_blank(2, [1, 2, 3])
+blank_in_blank(set2 = [1, 2, 3], set1 = 2)

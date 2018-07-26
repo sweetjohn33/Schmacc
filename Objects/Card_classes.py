@@ -182,58 +182,6 @@ class PermanentCard:
             print("\n" + perm2.name() + "'s health is now " + str(perm2.current_health()) + "\n")
         self.land_switch(self._previous_land)
 
-    def pick_target(self, effect, game):
-        type_object = effect[1][0]
-        place = effect[1][1]
-        what_players = effect[1][2]
-        number_of = effect[1][3]
-        
-        chosen_ = []
-        if effect[1] == ["self"]:
-            chosen_.append(self) 
-        viable_players = []
-        viable_ = []
-        if what_players == "all":
-            for player in game.return_players().return_deck():
-                viable_players.append(player)
-        if what_players == "opponents":
-            for player in game.return_players().return_deck():
-                if player.name() != self._owner.name():
-                    viable_players.append(player)
-        if what_players == "owner":
-            for player in game.return_players().return_deck():
-                if player.name() == self._owner.name():
-                    viable_players.append(player)
-        if type_object == "creature":
-            if place == "graveyard":
-                for player in viable_players:
-                    for monster in player.graveyard():
-                        viable_.append(monster)
-
-            if place == "battlefield":
-                for player in viable_players:
-                    for land in player.lands():
-                        for monster in land.monster_slot():
-                            viable_.append(monster)
-
-        if type_object == "building":
-            for player in viable_players:
-                for land in player.lands():
-                    for building in land.building_slots():
-                        viable_.append(building)
-        if type_object == "player":
-            for player in viable_players:
-                viable_.append(player)
-        for i in range(number_of):
-            for g in range(len(viable_)):
-                print(str(g + 1) + ") " + viable_[g].owner().name() + ": " + viable_[g].name())
-            target = input("Which would you like to target?")
-            target = int(target) - 1
-            chosen_.append(viable_[target])
-            del viable_[target]
-
-        completed_effect = self._effect + str(chosen_) + ")"
-        return completed_effect
 
 
 class BasicCreature(PermanentCard):
