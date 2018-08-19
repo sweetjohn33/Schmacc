@@ -38,7 +38,6 @@ class PermanentCard:
         self._previous_land = None
         self._effect = effect
 
-
     def name(self) -> str:
         return self._name
 
@@ -129,59 +128,59 @@ class PermanentCard:
             self.return_to_original()
             self._owner.send_to_graveyard(self)
             self._land.delete_monster()
-        attack_roll = randint(1, 12)
-        defense_roll = randint(1, 12)
-        print(self._name + " Has rolled a " + str(attack_roll) + "!\n")
-        print(perm2.name() + " Has rolled a " + str(defense_roll) + "!\n")
-        attack = self.current_attack() + attack_roll
-        defense = perm2.current_defense() + defense_roll
-        health_lost = attack - defense
-        if health_lost >= 1:
-            perm2.lose_health(health_lost)
         else:
-            perm2.lose_health(1)
-        if perm2.current_health() <= 0:
-            print(perm2.name() + " Has been destroyed!")
-            if perm2.card_class() == "Building":
-                game.return_buildings().put_card_on_bottom(perm2)
-                game.return_buildings().return_deck()[-1].return_to_original()
-                found_already = 0
-                while found_already == 0:
-                    for building in perm2.owner().building_slots():
-                        if building.name() == perm2.name() and building.current_health() == perm2.current_health():
-                            building_index = perm2.owner().building_slots().index(building)
-                            perm2.owner().lose_buildings(building_index)
-                            found_already += 1
+            attack_roll = randint(1, 12)
+            defense_roll = randint(1, 12)
+            print(self._name + " Has rolled a " + str(attack_roll) + "!\n")
+            print(perm2.name() + " Has rolled a " + str(defense_roll) + "!\n")
+            attack = self.current_attack() + attack_roll
+            defense = perm2.current_defense() + defense_roll
+            health_lost = attack - defense
+            if health_lost >= 1:
+                perm2.lose_health(health_lost)
+            else:
+                perm2.lose_health(1)
+            if perm2.current_health() <= 0:
+                print(perm2.name() + " Has been destroyed!")
+                if perm2.card_class() == "Building":
+                    game.return_buildings().put_card_on_bottom(perm2)
+                    game.return_buildings().return_deck()[-1].return_to_original()
+                    found_already = 0
+                    while found_already == 0:
+                        for building in perm2.owner().building_slots():
+                            if building.name() == perm2.name() and building.current_health() == perm2.current_health():
+                                building_index = perm2.owner().building_slots().index(building)
+                                perm2.owner().lose_buildings(building_index)
+                                found_already += 1
+
+                else:
+                    perm2.return_to_original()
+                    perm2.owner().send_to_graveyard(perm2)
+                    perm2.previous_land().delete_monster()
+                buildings = perm2.previous_land().building_slots()
+                if len(buildings) > 0:
+                    new_target = ""
+                    tried_before = 0
+                    while not new_target.isdigit() or int(new_target) - 1 not in \
+                            range(len(buildings)):
+                        if tried_before > 0:
+                            print("Invalid Input, try again.")
+                        print(self.name() + " is on a rampage! What else would you like to attack?")
+                        for building in buildings:
+                            print(str(buildings.index(building) + 1) + ") " + building.name() + ": Health: " +
+                                  str(building.current_health()) + "  |||  Defense: " + str(building.current_defense()))
+                        new_target = input("What is your next victim?\n")
+                    new_target = int(new_target) - 1
+                    self.combat(buildings[new_target], game)
+                elif perm2.previous_land().monster_slot().name() == "DJ Meow Mix":
+                    print("DJ Meow Mix is in big trouble...")
+                    self.combat(perm2.previous_land().monster_slot(), game)
+                else:
+                    print("Your " + self.name() + "has totally cleared this column out bro, good work.")
 
             else:
-                perm2.return_to_original()
-                perm2.owner().send_to_graveyard(perm2)
-                perm2.previous_land().delete_monster()
-            buildings = perm2.previous_land().building_slots()
-            if len(buildings) > 0:
-                new_target = ""
-                tried_before = 0
-                while not new_target.isdigit() or int(new_target) - 1 not in \
-                        range(len(buildings)):
-                    if tried_before > 0:
-                        print("Invalid Input, try again.")
-                    print(self.name() + " is on a rampage! What else would you like to attack?")
-                    for building in buildings:
-                        print(str(buildings.index(building) + 1) + ") " + building.name() + ": Health: " +
-                              str(building.current_health()) + "  |||  Defense: " + str(building.current_defense()))
-                    new_target = input("What is your next victim?\n")
-                new_target = int(new_target) - 1
-                self.combat(buildings[new_target], game)
-            elif perm2.previous_land().monster_slot().name() == "DJ Meow Mix":
-                print("DJ Meow Mix is in big trouble...")
-                self.combat(perm2.previous_land().monster_slot(), game)
-            else:
-                print("Your " + self.name() + "has totally cleared this column out bro, good work.")
-
-        else:
-            print("\n" + perm2.name() + "'s health is now " + str(perm2.current_health()) + "\n")
-        self.land_switch(self._previous_land)
-
+                print("\n" + perm2.name() + "'s health is now " + str(perm2.current_health()) + "\n")
+            self.land_switch(self._previous_land)
 
 
 class BasicCreature(PermanentCard):

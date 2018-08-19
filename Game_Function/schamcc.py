@@ -184,20 +184,27 @@ class Schmacc:
 
         # Shuffles the deck of Spell cards
 
-        self._Spells = sample(self._Spells, len(self._Spells))
+        self._Spells = sample(self._Spells, len(self._Spells))\
+        
+        
+    def print_player_state(self, player):
+        
+        # Prints the contents of a player's lands and graveyard
+
+        print("\n=======\n\n" + player.name() + "'s shit:\n")
+        for a in player.lands():
+            a.print_contents_neatly()
+        gravyyard = []
+        for g in player.graveyard():
+            gravyyard.append(g.name())
+        print("\n" + player.name() + "'s graveyard: " + ', '.join(gravyyard))
 
     def print_game_state(self):
 
         # Prints the contents of every player's land and graveyard, next to their name.
 
         for i in self._Players.return_deck():
-            print("\n=======\n\n" + i.name() + "'s shit:\n")
-            for a in i.lands():
-                a.print_contents_neatly()
-            gravyyard = []
-            for g in i.graveyard():
-                gravyyard.append(g.name())
-            print("\n" + i.name() + "'s graveyard: " + ', '.join(gravyyard))
+            self.print_player_state(i)
 
     def print_monster_stats(self):
         for i in self._Players.return_deck():
@@ -274,6 +281,7 @@ class Schmacc:
         print("A MASSIVE " + weather + " has surrounded the battlefield!")
 
     def trigger_check(self, trigger):
+        stack = []
         for player in self._Players.return_deck():
             for land in player.lands():
                 for monster in land.monster_slot():
@@ -287,7 +295,7 @@ class Schmacc:
                                     self._Stack.append(monster.pick_target(entry, self))
                             else:
                                 self._Stack.append(monster.pick_target(entry, self))
-            for spell in play.spells():
+            for spell in player.spells():
                 # check spell triggers and prompt spell activations
                 for building in land.building_slots():
                     for entry in building.return_effect():
@@ -299,3 +307,176 @@ class Schmacc:
                                 stack.append(building.pick_target(entry, self))
         for i in range(len(stack)):
             exec(stack.pop())
+
+    def pick_tribute(self, player):
+        print("=======\n" + player.name() + "'s shit")
+        land_index = ""
+        tried_before = 0
+        while not land_index.isdigit() or int(land_index) - 1 not in range(len(player.lands())) \
+                and int(land_index) != 1000:
+            if tried_before > 0:
+                print("Invalid input, Try again!\n")
+            for a in range(len(player.lands())):
+                print(str(a + 1) + ") " + player.lands()[a].name(), ":",
+                      player.lands()[a].contents())
+            print("1000) Never Mind")
+            land_index = input("\nFrom which land would you like to ruthlessly murder?")
+            tried_before += 1
+        land_index = int(land_index) - 1
+
+        # Once the player picks an appropriate land, the monster on that land and its current stats will be
+        # displayed. The player will be asked to confirm their decision to tribute.
+
+        if land_index != 999:
+            land = player.lands()[land_index]
+            if land.length_monster_list() != 0:
+                monster_sold = ""
+                tried_before = 0
+                while not monster_sold.isdigit() or int(monster_sold) not in [1, 2]:
+                    if tried_before > 0:
+                        print("Invalid input. Try again!\n")
+                    print(land.monster_slot().name() + ": Current Health: "
+                          + str(land.monster_slot().current_health()) + " Current Defense: " +
+                          str(land.monster_slot().current_defense()) + "\n1) Yes\n2) No")
+                    monster_sold = input("Are you sure you want to Sack this Mon??")
+                    tried_before += 1
+
+                # If the player confirms their choice. The monster is tributed and the player is returned to
+                # the building phase menu. If they don't confirm they are just sent back to the menu.
+
+                if int(monster_sold) == 1:
+                    player.tribute_monster(self, land)
+
+                else:
+                    print("\nFine, suit yourself\n")
+
+
+            else:
+                print("There are no Monsters on that land! You should know better!!\n")
+
+
+    # If the player wants to check shit out they get a print out of the game state including every player's
+    # lands, monsters, and graveyard. Then they are returned to the building phase menu.
+            
+    def sell_something(self, card, player):
+        if card == "development":
+            print("=======\n" + player.name() + "'s shit")
+            land_index = ""
+            tried_before = 0
+            while not land_index.isdigit() or int(land_index) - 1 not in range(len(player.lands())) \
+                    and int(land_index) != 1000:
+                if tried_before > 0:
+                    print("Invalid input, Try again!\n")
+                for a in range(len(player.lands())):
+                    print(str(a + 1) + ") " + player.lands()[a].name(), ":",
+                          player.lands()[a].contents())
+                print("1000) Never Mind")
+                land_index = input("\nFrom which land would you like to sell?")
+                tried_before += 1
+            land_index = int(land_index) - 1
+    
+            # If the player selects a land to sell from, the buildings present on that land will be displayed
+            # with their current health and defense. The player must then decide which of the (max 2) buildings
+            # on that land to sell
+    
+            if land_index != 999:
+                land = player.lands()[land_index]
+                if len(land.building_slots()) != 0:
+                    building_sold = ""
+                    tried_before = 0
+                    while not building_sold.isdigit() or int(building_sold) - 1 not in \
+                            range(len(land.building_slots())) and int(building_sold) != 1000:
+                        if tried_before > 0:
+                            print("\nInvalid Input. Try Again.\n")
+                        for a in range(len(land.building_slots())):
+                            print(str(a + 1) + ") " + land.building_slots()[a].name() + ": Current Health: "
+                                  + str(land.building_slots()[a].current_health()) + " Current Defense: " +
+                                  str(land.building_slots()[a].current_defense()))
+                        print("1000) Never Mind")
+                        building_sold = input("Which building would you like to sell? ")
+                        tried_before += 1
+                    building_sold = int(building_sold) - 1
+    
+                    # If the player chooses a building to sell, that building will be removed from the land and
+                    # returned to the list of buildings with its stats restored to their original values.
+                    # If the building was below its full health when it was sold, the player will
+                    # receive 3 rabbits. If the health is full, the player receives 5 rabbits.
+    
+                    if building_sold != 999:
+                        print(player.name() + " has sold " + land.building_slots()[building_sold].name())
+                        if land.building_slots()[building_sold].current_health() < \
+                                land.building_slots()[building_sold].original_health():
+                            player.add_rabbits(3)
+                        else:
+                            player.add_rabbits(5)
+                        land.building_slots()[building_sold].return_to_original()
+                        land.building_slots()[building_sold].land_switch(None)
+                        self.return_buildings().put_card_on_bottom(land.building_slots()[building_sold])
+                        del land.building_slots()[building_sold]
+                else:
+                    print("There are no buildings on that land! You should know better!!\n")
+            # If the player wants to sell a spell, they will be prompted to pick
+            # three spell cards from their hand to sell
+
+        if card == "magic":
+            # If the player has at least three spells, the game will ask the player to input three spells to sell
+            # Those cards are removed from the player's hand and placed in a list to be held until that list
+            # contains three spell cards.
+
+            if len(player.spells()) >= 3:
+                spells_to_sell = []
+                for j in range(3):
+                    item_sold = ""
+                    tried_before = 0
+                    while not item_sold.isdigit() or int(item_sold) \
+                            not in range(len(player.spells()) + 1) or int(item_sold) == 0:
+                        if tried_before > 0:
+                            print("Invalid input. Try again!\n")
+                        for i in player.spells():
+                            print(str(player.spells().index(i) + 1) + ")" + i.name())
+                        item_sold = input("\nYou will need to pick 3 spells to sell, Pick one")
+                        tried_before += 1
+                    item_sold = int(item_sold) - 1
+                    spells_to_sell.append(player.spells()[item_sold])
+                    player.lose_spells(item_sold)
+
+                # When the Spells to sell list reaches length 3, the player will be reminded of which cards
+                # they have chosen and asked to confirm their choice. If they confirm, the spells will be sold
+                # and placed on the bottom of the spell deck, and the player receives 1 neutered rabbit
+
+                choice = ""
+                tried_before = 0
+                while not choice.isdigit() or int(choice) not in [1, 2]:
+                    if tried_before > 0:
+                        print("Invalid input. Try again!\n")
+                    print(spells_to_sell + "\n1) Yes\n2) No\n")
+                    choice = input("Are you sure you want to sell these cards??")
+                    tried_before += 1
+                if int(choice) == 1:
+                    for gorf in spells_to_sell:
+                        self.return_spells().put_card_on_bottom(gorf)
+                        del gorf
+                    player.add_rabbits(1)
+                else:
+                    print("\nIm so sorry we couldn't come to an agreement!\n")
+                    for gorf in spells_to_sell:
+                        player.spells().put_card_on_bottom(gorf)
+                        del gorf
+            else:
+                print(player.name() + " doesn't have 3 Spells to sell!\n")
+
+            # If the player doesnt want to sell, they will be returned to the original menu of the building phase
+
+        else:
+            g = ""
+            tried_before = 0
+            while not g.isdigit() or int(g) not in range(1, 8):
+                if tried_before > 0:
+                    print("\nInvalid Input. Try Again!\n")
+                print(building_phase_quote)
+                g = input("Answer me with a number please:")
+                tried_before += 1
+            g = int(g)
+
+        # If the player wants to tribute a monster, they will need to pick a land from which to tribute
+        # (for reasons specified earlier)

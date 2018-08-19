@@ -19,6 +19,7 @@ class Effect:
         self._Conditions = conditions
         self._Mandatory = mandatory
 
+
 class ContinuousEffect(Effect):
 
     def __init__(self, function, target=[], mandatory=False, aftereffect=None, trigger=[], conditions=None):
