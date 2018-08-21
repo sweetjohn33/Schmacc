@@ -147,6 +147,7 @@ class Schmacc:
         self._Weather_count = 0
         self._Stack = []
 
+
     def return_number_of_players(self):
         return self._number_of_Players
 
@@ -352,7 +353,7 @@ class Schmacc:
 
 
             else:
-                print("There are no Monsters on that land! You should know better!!\n")
+                print("\nThere are no Monsters on that land! You should know better!!\n")
 
 
     # If the player wants to check shit out they get a print out of the game state including every player's
@@ -406,9 +407,11 @@ class Schmacc:
                         print(player.name() + " has sold " + land.building_slots()[building_sold].name())
                         if land.building_slots()[building_sold].current_health() < \
                                 land.building_slots()[building_sold].original_health():
-                            player.add_rabbits(3)
+                            sell_price = player.calculate_sell_price(3)
+                            player.add_rabbits(sell_price)
                         else:
-                            player.add_rabbits(5)
+                            sell_price = player.calculate_sell_price(5)
+                            player.add_rabbits(sell_price)
                         land.building_slots()[building_sold].return_to_original()
                         land.building_slots()[building_sold].land_switch(None)
                         self.return_buildings().put_card_on_bottom(land.building_slots()[building_sold])
@@ -422,10 +425,10 @@ class Schmacc:
             # If the player has at least three spells, the game will ask the player to input three spells to sell
             # Those cards are removed from the player's hand and placed in a list to be held until that list
             # contains three spell cards.
-
-            if len(player.spells()) >= 3:
+            number_to_sell = int(3 * player.return_buysell() + .5)
+            if len(player.spells()) >= number_to_sell:
                 spells_to_sell = []
-                for j in range(3):
+                for j in range(number_to_sell):
                     item_sold = ""
                     tried_before = 0
                     while not item_sold.isdigit() or int(item_sold) \
@@ -466,17 +469,6 @@ class Schmacc:
                 print(player.name() + " doesn't have 3 Spells to sell!\n")
 
             # If the player doesnt want to sell, they will be returned to the original menu of the building phase
-
-        else:
-            g = ""
-            tried_before = 0
-            while not g.isdigit() or int(g) not in range(1, 8):
-                if tried_before > 0:
-                    print("\nInvalid Input. Try Again!\n")
-                print(building_phase_quote)
-                g = input("Answer me with a number please:")
-                tried_before += 1
-            g = int(g)
 
         # If the player wants to tribute a monster, they will need to pick a land from which to tribute
         # (for reasons specified earlier)

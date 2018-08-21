@@ -42,5 +42,5 @@ def blank_in_blank(set1, set2):
     else:
         print("sorry")
 
-blank_in_blank(2, [1, 2, 3])
-blank_in_blank(set2 = [1, 2, 3], set1 = 2)
+
+print(str(int(5 / 2 + .5)))

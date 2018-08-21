@@ -25,7 +25,7 @@ class Player:
         self._creatures = []
         self._food_count = 0
         self._lands = []
-        self._player_ID = randint(1,10000)
+        self._buysellmultiplier = 1
 
     def name(self) -> str:
         return self._name
@@ -33,11 +33,19 @@ class Player:
     def set_name(self, name):
         self._name = name
 
-    def player_ID(self):
-        return self._player_ID
-
     def rabbit_count(self) -> int:
         return self._Neutered_rabbits
+
+    def return_buysell(self):
+        return self._buysellmultiplier
+
+    def calculate_cost(self, cost):
+        new_cost = int(cost * self._buysellmultiplier + .5)
+        return new_cost
+
+    def calculate_sell_price(self, sell_price):
+        new_sell_price = int(cost / self._buysellmultiplier + .5)
+        return new_sell_price
 
     def add_rabbits(self, number):
         self._Neutered_rabbits += number
@@ -368,6 +376,7 @@ class Player:
         # determine what the player will be receiving (ie elite creature, or building, or spell, etc.). The player
         # receives that monster and gets to place it. They lose a number of neutered rabbits equal to the
         # cost of what they bought.
+        cost = self.calculate_cost(cost)
         pist = deck.return_deck()
         if len(pist) > 0:
             if self.rabbit_count() >= cost:
@@ -401,7 +410,7 @@ class Player:
                 :param player: player buying
                 :param deck: deck bought from
                 """
-
+        cost = self.calculate_cost(cost)
         pist = deck.return_deck()
         if len(pist) > 0:
             if self.rabbit_count() >= cost:
