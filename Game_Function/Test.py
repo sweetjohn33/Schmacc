@@ -1,6 +1,7 @@
 import pygame, sys
 from pygame.locals import *
 import math
+from Objects.Card_classes import *
 
 
 def drawregularpolygon(surface, color, numSides, tiltAngle, x, y, radius):
@@ -43,4 +44,14 @@ def blank_in_blank(set1, set2):
         print("sorry")
 
 
-print(str(int(5 / 2 + .5)))
+jeb = EliteCreature("Armadillo Turtle", 11, 11, 2, "Marsh", "Forest")
+boof = [jeb]
+jeb.lose_health(2)
+boof[0].lose_health(3)
+if jeb == boof[0]:
+    print("Hooray")
+if jeb is boof[0]:
+    print("congratulations")
+
+print(jeb.current_health())
+print(boof[0].current_health())

@@ -146,6 +146,8 @@ class Schmacc:
         self._Previous_weather = CLEAR
         self._Weather_count = 0
         self._Stack = []
+        self._Event_log = []
+        self._Pending_log = []
 
 
     def return_number_of_players(self):
@@ -156,6 +158,16 @@ class Schmacc:
 
     def advance_turn_counter(self):
         self._Turn_counter += 1
+
+    def log_event(self, event):
+        self._Event_log.append(event)
+
+    def log_pending_event(self, event):
+        self._Pending_log.append(event)
+
+    def merge_pending(self):
+        for event in self._Pending_log:
+            self._Event_log.append(event)
 
     def return_spells(self):
         return self._Spells
@@ -181,13 +193,6 @@ class Schmacc:
     def return_elite_creatures(self):
         return self._Elite_creatures
 
-    def shuffle_deck(self):
-
-        # Shuffles the deck of Spell cards
-
-        self._Spells = sample(self._Spells, len(self._Spells))\
-        
-        
     def print_player_state(self, player):
         
         # Prints the contents of a player's lands and graveyard
