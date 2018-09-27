@@ -7,9 +7,25 @@ from Objects.Card_classes import BasicCreature
 from Objects.Card_classes import Building
 from Objects.Card_classes import Spell
 from Objects.Land import Land
-from random import sample
+from random import randint
 from Objects.Constants import *
 
+class GameLoop:
+
+    def __init__(self, players, game_board):
+        self.players = players
+        self.player_index = randint(0, len(players))
+        self.active_player = players[self.player_index]
+        self.game_board = game_board
+
+    def play(self):
+        while not game_over(self.game_board.board)[0]:
+            # self.game_board.display()
+            # print("{}'s move: ".format(self.active_player.shape))
+            self.active_player.turn(self.game_board.board)
+            self.player_index += 1
+            self.active_player = self.players[self.player_index]
+        self.print_end_game()
 
 class Schmacc:
 
