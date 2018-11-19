@@ -2,6 +2,23 @@ import pygame, sys
 from pygame.locals import *
 import math
 from Objects.Card_classes import *
+import pickle
+import shelve
+from Objects.Land import Land
+
+shelfFile = shelve.open('some_file')
+mySpell = Spell("ability swap", "swap abilities")
+shelfFile['list'] = mySpell
+shelfFile.close()
+
+
+from Objects.Card_classes import Spell
+import shelve
+shelfFile = shelve.open('some_file')
+mySpell = shelfFile ['list']
+shelfFile.close()
+## print(mySpell)
+print(mySpell.name)
 
 
 def drawregularpolygon(surface, color, numSides, tiltAngle, x, y, radius):
@@ -37,21 +54,23 @@ def drawregularpolygon(surface, color, numSides, tiltAngle, x, y, radius):
 #
 #     pygame.display.update()
 
-def blank_in_blank(set1, set2):
-    if set1 in set2:
-        print("congrats")
-    else:
-        print("sorry")
+    def blank_in_blank(set1, set2):
+        if set1 in set2:
+            print("congrats")
+        else:
+            print("sorry")
 
 
-jeb = EliteCreature("Armadillo Turtle", 11, 11, 2, "Marsh", "Forest")
-boof = [jeb]
-jeb.lose_health(2)
-boof[0].lose_health(3)
-if jeb == boof[0]:
-    print("Hooray")
-if jeb is boof[0]:
-    print("congratulations")
+    jeb = EliteCreature("Armadillo Turtle", 11, 11, 2, "Marsh", "Forest")
+    boof = [jeb]
+    jeb.lose_health(2)
+    boof[0].lose_health(3)
+    if jeb == boof[0]:
+        print("Hooray")
+    if jeb is boof[0]:
+        print("congratulations")
 
-print(jeb.current_health())
-print(boof[0].current_health())
+    print(jeb.current_health())
+    print(boof[0].current_health())
+
+
